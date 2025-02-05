@@ -44,6 +44,7 @@ alias francinette=/Users/sasakiyuto/francinette/tester.sh
 alias paco=/Users/sasakiyuto/francinette/tester.sh
 alias ls="lsd --icon never"
 alias ls --tree="lsd --icon never --tree"
+alias ll="ls -al"
 
 google(){
      local url="https://google.co.jp/search?q=${*// /+}"
