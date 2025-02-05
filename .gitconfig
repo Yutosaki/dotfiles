@@ -1,0 +1,18 @@
+[user]
+	email = sasayu8190@gmail.com
+	name = Yutosaki
+[alias]
+	co = checkout
+	br = branch
+ 	st = status
+    sw = switch
+    cp = cherry-pick
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[pull]
+	rebase = merges
+[init]
+	templateDir = /Users/sasakiyuto/.git_template
