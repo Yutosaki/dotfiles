@@ -1,7 +1,6 @@
 set number
 syntax on
 set wildmenu
-# colorscheme blue 
 
 set autoindent
 set smartindent
