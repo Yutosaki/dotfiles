@@ -1,19 +1,19 @@
 export PATH="/usr/local/bin:$PATH"
-export PYENV_ROOT="$HOME/.pyenv"
+# export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 export PATH="$PATH:$HOME/.venv/bin"
 export GOPATH="$HOME/Go"
 export PATH="$PATH:$GOPATH/bin"
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/.npm-global/bin"
-export PATH="$HOME/.rbenv/bin:$PATH"
+# export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$PATH:$HOME/.local/bin/flutter/bin"
 export PATH="$PATH:$HOME/opt/anaconda3/bin/conda"
 # export PYTHONPATH="/Users/sasakiyuto/.pyenv/versions/3.11.4/lib/python3.11/site-packages:$PYTHONPATH"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
-eval "$(pyenv init -)"
-eval "$(rbenv init -)"
+# eval "$(pyenv init -)"
+# eval "$(rbenv init -)"
 
 eval "$(ssh-agent -s)"
 export APPLE_SSH_ADD_BEHAVIOR=Apple
@@ -37,8 +37,8 @@ export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
 export LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
 
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/dotfiles/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 alias francinette=/Users/sasakiyuto/francinette/tester.sh
 alias paco=/Users/sasakiyuto/francinette/tester.sh
@@ -51,3 +51,31 @@ google(){
      open -a "Google Chrome" "$url"
 }
 
+# Lima BEGIN
+# Make sure iptables and mount.fuse3 are available
+PATH="$PATH:/usr/sbin:/sbin"
+export PATH
+# Lima END
+source /home/sasakiyuto.linux/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+autoload -U compinit; compinit
+source ~/dotfiles/fzf-tab/fzf-tab.plugin.zsh
+
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+# NOTE: don't use escape sequences (like '%F{red}%d%f') here, fzf-tab will ignore them
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# custom fzf flags
+# NOTE: fzf-tab does not follow FZF_DEFAULT_OPTS by default
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+# To make fzf-tab follow FZF_DEFAULT_OPTS.
+# NOTE: This may lead to unexpected behavior since some flags break this plugin. See Aloxaf/fzf-tab#455.
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+# switch group using `<` and `>`
+zstyle ':fzf-tab:*' switch-group '<' '>'
