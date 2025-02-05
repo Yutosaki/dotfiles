@@ -7,6 +7,7 @@
  	st = status
     sw = switch
     cp = cherry-pick
+    cm = commit
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
