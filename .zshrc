@@ -85,7 +85,7 @@ export FZF_CTRL_R_OPTS='--height 40% --layout=reverse --preview "echo {}" --prev
 # Ctrl+Rでfzfを使用して履歴を検索
 # 既存の key-bindings は使わず、独自ウィジェットを利用
 __fzf_history__() {
-  local selected=$(history 1 | tail -r | fzf --height=40% --layout=reverse --color=fg:\#d0d0d0,bg:\#1e1e1e,hl:\#ffaf00,fg+:\#d0d0d0,bg+:\#5f00af,hl+:\#ffaf00,info:\#ffaf00,prompt:\#ffaf00,pointer:\#ffaf00,marker:\#ffaf00,spinner:\#ffaf00,header:\#ffaf00)
+  local selected=$(history 1 | rtac | fzf --height=40% --layout=reverse --color=fg:\#d0d0d0,bg:\#1e1e1e,hl:\#ffaf00,fg+:\#d0d0d0,bg+:\#5f00af,hl+:\#ffaf00,info:\#ffaf00,prompt:\#ffaf00,pointer:\#ffaf00,marker:\#ffaf00,spinner:\#ffaf00,header:\#ffaf00)
   if [ -n "$selected" ]; then
     LBUFFER=$(echo "$selected" | sed 's/^[ ]*[0-9]\+[ ]*//')
   fi
@@ -133,6 +133,12 @@ alias paco="/Users/sasakiyuto/francinette/tester.sh"
 alias ls="lsd --icon never"
 alias ls --tree="lsd --icon never --tree"
 alias ll="ls -al"
+
+if command -v tac >/dev/null 2>&1; then
+  alias rtac='tac'
+else
+  alias rtac='tail -r'
+fi
 
 # Google検索の関数
 google(){
