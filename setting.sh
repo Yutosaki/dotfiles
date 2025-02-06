@@ -16,4 +16,7 @@ fi
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 git clone https://github.com/zsh-users/zsh-autosuggestions
 git clone https://github.com/Aloxaf/fzf-tab
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 
+# fzfを有効化
+~/.fzf/install -y
