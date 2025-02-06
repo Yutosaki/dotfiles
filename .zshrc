@@ -83,11 +83,9 @@ export FZF_DEFAULT_COMMAND='history -1000'
 export FZF_CTRL_R_OPTS='--height 40% --layout=reverse --preview "echo {}" --preview-window down:3:wrap --bind ctrl-y:execute-silent(echo -n {2..} | pbcopy)'
 
 # Ctrl+Rでfzfを使用して履歴を検索
-# source ~/.fzf/shell/key-bindings.zsh
-
-# 独自のfzf-historyウィジェットを定義
+# 既存の key-bindings は使わず、独自ウィジェットを利用
 __fzf_history__() {
-  local selected=$(history 1 | tac | fzf --height 40% --layout=reverse)
+  local selected=$(history 1 | tail -r | fzf --height=40% --layout=reverse --color=fg:\#d0d0d0,bg:\#1e1e1e,hl:\#ffaf00,fg+:\#d0d0d0,bg+:\#5f00af,hl+:\#ffaf00,info:\#ffaf00,prompt:\#ffaf00,pointer:\#ffaf00,marker:\#ffaf00,spinner:\#ffaf00,header:\#ffaf00)
   if [ -n "$selected" ]; then
     LBUFFER=$(echo "$selected" | sed 's/^[ ]*[0-9]\+[ ]*//')
   fi
@@ -95,15 +93,6 @@ __fzf_history__() {
 }
 zle -N __fzf_history__
 bindkey '^R' __fzf_history__
-
-# fzfの色設定
-export FZF_DEFAULT_OPTS='
-  --height 40% --layout=reverse
-  --color=fg:#d0d0d0,bg:#1e1e1e,hl:#ffaf00
-  --color=fg+:#d0d0d0,bg+:#5f00af,hl+:#ffaf00
-  --color=info:#ffaf00,prompt:#ffaf00,pointer:#ffaf00
-  --color=marker:#ffaf00,spinner:#ffaf00,header:#ffaf00'
-
 
 # fzf-tab の設定
 fpath+=($HOME/dotfiles/fzf-tab) # fpath に fzf-tab を追加
