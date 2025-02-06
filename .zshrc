@@ -105,7 +105,7 @@ zstyle ':completion:*' menu yes select
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' fzf-flags --color=fg:5,fg+:75 --bind=tab:accept
+zstyle ':fzf-tab:*' fzf-flags --color=fg:135,fg+:206,hl:223,hl+:220 --bind=tab:accept
 
 # compinit の遅延対策
 if [ -z "$ZSH_COMPDUMP" ]; then
