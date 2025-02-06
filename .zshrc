@@ -69,7 +69,7 @@ export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
 # プロンプト設定
 # ================================
 autoload -Uz colors && colors
-PROMPT='%F{078}%n%F{081}@%F{078}%m %F{magenta}%~%F{reset} %# '
+PROMPT='%F{118}%n%F{050}@%F{118}%m %F{164}%~%F{reset} %# '
 
 # ================================
 # fzf 設定
@@ -105,7 +105,7 @@ zstyle ':completion:*' menu yes select
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+zstyle ':fzf-tab:*' fzf-flags --color=fg:5,fg+:75 --bind=tab:accept
 
 # compinit の遅延対策
 if [ -z "$ZSH_COMPDUMP" ]; then
