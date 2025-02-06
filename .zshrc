@@ -56,7 +56,7 @@ google(){
 PATH="$PATH:/usr/sbin:/sbin"
 export PATH
 # Lima END
-source /home/sasakiyuto.linux/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $HOME/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 autoload -U compinit; compinit
 source ~/dotfiles/fzf-tab/fzf-tab.plugin.zsh
 
