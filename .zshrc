@@ -5,20 +5,8 @@
 # 高機能な補完機能を有効化
 autoload -Uz compinit && compinit
 
-# 大文字・小文字の区別をなくす
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-
-# 補完の設定 (補完候補をメニュー表示)
-zstyle ':completion:*' menu select
-
-# 補完のリストをスクロールできるようにする
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-
 # '#' 以降をコメントとして扱う
 setopt interactive_comments
-
-# `cd` コマンドの補完時にディレクトリの内容を表示
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --icon=never --tree --color=always $realpath'
 
 # ヒストリ設定
 setopt share_history         # 他のzshセッションと履歴を共有
@@ -118,6 +106,8 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' fzf-flags --color=fg:135,fg+:206,hl:223,hl+:220 --bind=tab:accept
+zstyle ':fzf-tab:*' fzf-preview-window 'up:40%,min-height:5'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --icon=never --tree --color=always $realpath'
 
 # compinit の遅延対策
 if [ -z "$ZSH_COMPDUMP" ]; then
