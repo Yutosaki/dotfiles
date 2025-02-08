@@ -89,8 +89,8 @@ __fzf_history__() {
 
   local selected
   selected=$(eval "$history_cmd" | fzf --height=40% --layout=reverse \
-    --color="fg:#d0d0d0,bg:#1e1e1e,hl:#ffaf00,fg+:#d0d0d0,bg+:#5f00af,hl+:#ffaf00,info:#ffaf00,prompt:#ffaf00,pointer:#ffaf00,marker:#ffaf00,spinner:#ffaf00,header:#ffaf00")
-
+    --color="fg:#d0d0d0,bg:#1e1e1e,hl:#ffaf00,fg+:#d0d0d0,bg+:#5f00af,hl+:#ffaf00,info:#ffaf00,prompt:#ffaf00,pointer:#ffaf00,marker:#ffaf00,spinner:#ffaf00,header:#ffaf00" \
+    --bind "del:abort")
   if [[ -n "$selected" ]]; then
      # Remove the history number using extended regex
     LBUFFER=$(echo "$selected" | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+//')
