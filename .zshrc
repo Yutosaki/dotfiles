@@ -41,6 +41,9 @@ export PATH="/opt/homebrew/opt/icu4c/sbin:$PATH"
 # Lima 環境のためのパス追加
 export PATH="$PATH:/usr/sbin:/sbin"
 
+# cargoのpathを環境変数に設定
+source ~/.cargo/env
+
 # ================================
 # PostgreSQL 設定
 # ================================

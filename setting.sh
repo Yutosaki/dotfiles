@@ -21,3 +21,7 @@ git clone https://github.com/sharkdp/bat.git
 
 # fzfを有効化
 yes | ~/.fzf/install
+
+# cargoのインストール
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
