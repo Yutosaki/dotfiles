@@ -137,10 +137,9 @@ source ~/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # ================================
 # エイリアス
 # ================================
-alias francinette="/Users/sasakiyuto/francinette/tester.sh"
-alias paco="/Users/sasakiyuto/francinette/tester.sh"
+alias francinette="$HOME/francinette/tester.sh"
+alias paco="$HOME/francinette/tester.sh"
 alias ls="lsd --icon never"
-alias ls --tree="lsd --icon never --tree"
 alias ll="ls -al"
 alias bat='~/dotfiles/bat/target/release/bat'
 
@@ -156,3 +155,10 @@ google(){
     open -a "Google Chrome" "$url"
 }
 
+# Lima BEGIN
+# Make sure iptables and mount.fuse3 are available
+PATH="$PATH:/usr/sbin:/sbin"
+export PATH
+# Lima END
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
