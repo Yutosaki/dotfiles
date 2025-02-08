@@ -19,6 +19,9 @@ SAVEHIST=1000000
 # 高機能なワイルドカード展開を使用する
 setopt extended_glob
 
+# manでの表示をbatにする
+export MANPAGER="sh -c 'col -bx | $HOME/dotfiles/bat/target/release/bat --theme=TwoDark -l man -p'"
+
 # ================================
 # パス設定
 # ================================
@@ -69,6 +72,7 @@ fi
 # fzfの設定
 export FZF_DEFAULT_COMMAND='history -1000'
 export FZF_CTRL_R_OPTS='--height 40% --layout=reverse --preview "echo {}" --preview-window down:3:wrap --bind ctrl-y:execute-silent(echo -n {2..} | pbcopy)'
+# fzf --preview 'bat --color=always --style=numbers --line-range=:50{}'
 
 # Ctrl+Rでfzfを使用して履歴を検索
 # 既存の key-bindings は使わず、独自ウィジェットを利用
@@ -135,6 +139,7 @@ alias paco="/Users/sasakiyuto/francinette/tester.sh"
 alias ls="lsd --icon never"
 alias ls --tree="lsd --icon never --tree"
 alias ll="ls -al"
+alias bat='~/dotfiles/bat/target/release/bat'
 
 if command -v tac >/dev/null 2>&1; then
   alias rtac='tac'

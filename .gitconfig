@@ -17,3 +17,6 @@
 	rebase = merges
 [init]
 	templateDir = /Users/sasakiyuto/.git_template
+[pager]
+    diff = ~/dotfiles/bat/target/release/bat --paging=always
+    show = ~/dotfiles/bat/target/release/bat --paging=always
