@@ -22,6 +22,9 @@ setopt extended_glob
 # manでの表示をbatにする
 export MANPAGER="sh -c 'col -bx | $HOME/dotfiles/bat/target/release/bat --theme=TwoDark -l man -p'"
 
+# batの色を設定
+export BAT_THEME="Dracula"
+
 # ================================
 # パス設定
 # ================================
@@ -76,6 +79,8 @@ fi
 export FZF_DEFAULT_COMMAND='history -1000'
 export FZF_CTRL_R_OPTS='--height 40% --layout=reverse --preview "echo {}" --preview-window down:3:wrap --bind ctrl-y:execute-silent(echo -n {2..} | pbcopy)'
 # fzf --preview 'bat --color=always --style=numbers --line-range=:50{}'
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Ctrl+Rでfzfを使用して履歴を検索
 # 既存の key-bindings は使わず、独自ウィジェットを利用
@@ -161,4 +166,3 @@ PATH="$PATH:/usr/sbin:/sbin"
 export PATH
 # Lima END
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
