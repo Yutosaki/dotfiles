@@ -25,3 +25,8 @@ yes | ~/.fzf/install
 # cargoのインストール
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
+# batビルド用関数
+build_bat() {
+	( cd ~/dotfiles/bat && cargo build --release )
+}
+
