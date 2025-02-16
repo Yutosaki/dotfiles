@@ -25,9 +25,10 @@ mkcd() {
 
 # Gitブランチをプロンプトに表示する
 parse_git_branch() {
-    git branch 2>/dev/null | grep '*' | sed 's/* //'
+  git branch 2>/dev/null | sed -n '/\* /s///p'
 }
-PS1='\[\e[1;32m\]\u@\h:\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\$ '
+
+PS1="$(tput setaf 208)\u$(tput setaf 220)@$(tput setaf 208)\h $(tput setaf 215)\w $(tput setaf 209)\$(parse_git_branch)$(tput sgr0) \$ "
 
 # vimをデフォルトエディタに設定する
 export EDITOR=vim
