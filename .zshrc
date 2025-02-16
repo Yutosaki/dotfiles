@@ -66,8 +66,15 @@ export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
 # プロンプト設定
 # ================================
 autoload -Uz colors && colors
-PROMPT='%F{141}%n%F{091}@%F{141}%m %F{212}%~%F{reset} %# '
-# PROMPT='%F{050}%n%F{075}@%F{050}%m %F{212}%~%F{reset} %# '
+parse_git_branch() {
+  local branch=$(git branch --show-current 2>/dev/null)
+  [[ -n $branch ]] && echo " %F{221}$branch%f"
+}
+
+precmd() {
+#  PROMPT="%F{141}%n%F{091}@%F{141}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
+  PROMPT="%F{050}%n%F{075}@%F{050}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
+}
 
 # ================================
 # fzf 設定
