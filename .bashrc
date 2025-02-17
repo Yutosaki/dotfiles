@@ -1,39 +1,54 @@
-# 色付きのプロンプト
-PS1='\[\e[1;32m\]\u@\h:\w\$\[\e[0m\] '
-
-# コマンド補完を強化する
+# ================================
+# Bash 設定ファイル
+# ================================
+# コマンド補完の有効化
 if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
-# コマンド履歴を拡張する
-export HISTSIZE=10000      # 保存する履歴の数
-export HISTFILESIZE=20000  # 履歴ファイルのサイズ
-shopt -s histappend        # 履歴を追記する
-PROMPT_COMMAND='history -a'
+# ================================
+# 履歴設定
+# ================================
+export HISTSIZE=10000        # 保存する履歴の数
+export HISTFILESIZE=20000    # 履歴ファイルのサイズ
+shopt -s histappend          # 履歴を追記
+PROMPT_COMMAND='history -a'  # セッション毎に追加
 
-# alias（短縮コマンド）を設定する
+# ================================
+# alias（ショートカット）設定
+# ================================
 alias ll='ls -al --color=auto'
 
-# PATHを追加する
+# ================================
+# PATH 設定
+# ================================
 export PATH="$HOME/bin:$PATH"
 
-# シンプルで便利な関数
+# ================================
+# シンプルな関数定義
+# ================================
 mkcd() {
     mkdir -p "$1" && cd "$1"
 }
 
-# Gitブランチをプロンプトに表示する
+# ================================
+# プロンプト設定
+# ================================
+# オレンジベースのプロンプト：シェル名とホスト名は同じ色 (208)
+shellName=$(echo "$0" | sed 's/^-//')
 parse_git_branch() {
-  git branch 2>/dev/null | sed -n '/\* /s///p'
+    git branch 2>/dev/null | sed -n '/\* /s///p'
 }
 
-PS1="$(tput setaf 208)\u$(tput setaf 220)@$(tput setaf 208)\h $(tput setaf 215)\w $(tput setaf 209)\$(parse_git_branch)$(tput sgr0) \$ "
+PS1="$(tput setaf 208)${shellName}$(tput setaf 220)@$(tput setaf 208)\h $(tput setaf 215)\w $(tput setaf 209)\$(parse_git_branch)$(tput sgr0)\$ "
 
-# vimをデフォルトエディタに設定する
+# ================================
+# その他の設定
+# ================================
+# vim をデフォルトエディタに設定
 export EDITOR=vim
 
-# ターミナルの動作を高速化する
+# ターミナルの動作を高速化する設定
 bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'
 bind 'set bell-style none'
