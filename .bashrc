@@ -40,7 +40,7 @@ parse_git_branch() {
     git branch 2>/dev/null | sed -n '/\* /s///p'
 }
 
-PS1="$(tput setaf 208)${shellName}$(tput setaf 220)@$(tput setaf 208)\h $(tput setaf 215)\w $(tput setaf 209)\$(parse_git_branch)$(tput sgr0)\$ "
+PS1="$(tput setaf 208)${shellName}$(tput setaf 220)@$(tput setaf 208)\h $(tput setaf 215)\w $(tput setaf 228)\$(parse_git_branch)$(tput sgr0)\$ "
 
 # ================================
 # その他の設定
