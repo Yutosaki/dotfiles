@@ -25,6 +25,13 @@ export MANPAGER="sh -c 'col -bx | $HOME/dotfiles/bat/target/release/bat --theme=
 # batの色を設定
 export BAT_THEME="Dracula"
 
+# cdした後にlsするhook
+chpwd() {
+    if [[ $(pwd) != $HOME ]]; then;
+        ls
+    fi
+}
+
 # ================================
 # パス設定
 # ================================
@@ -36,6 +43,8 @@ export PATH="$PATH:$HOME/.npm-global/bin"
 export PATH="$PATH:$HOME/.local/bin/flutter/bin"
 export PATH="$PATH:$HOME/opt/anaconda3/bin/conda"
 export PATH="$PATH:$HOME/development/flutter/bin"
+export PATH="$PATH:$HOME/.config/nvim"
+export PATH="$PATH:$HOME/dotfiles/nvim-macos-arm64/bin"
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 export PATH="/opt/homebrew/opt/icu4c/bin:$PATH"
