@@ -1,4 +1,4 @@
-### my zsh setting file
+## my setting file
 
 # how to use
 
