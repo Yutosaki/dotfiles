@@ -1,13 +1,8 @@
 ### my zsh setting file
 
 # how to use
-```
-mkdir ~/dotfiles
 
-cd ~/dotfiles
-```
-
-run 
+run in your home directory
 
 ```
 git clone "this repository"
