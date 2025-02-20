@@ -9,7 +9,7 @@ git clone "this repository"
 
 sh settings.sh
 
-ln -snf ~/dotfiles/.zshrc ~/.zshrc # and so on...
+ln -snf ~/dotfiles/.zshrc ~/.zshrc # and so on... (.gitconfig .bashrc .vimrc)
 
 source ~/.zshrc
 ```
