@@ -20,7 +20,7 @@ SAVEHIST=1000000
 setopt extended_glob
 
 # manでの表示をbatにする
-export MANPAGER="sh -c 'col -bx | $HOME/dotfiles/bat/target/release/bat --theme=TwoDark -l man -p'"
+export MANPAGER="sh -c 'col -bx | $HOME/dotfiles/bat/target/release/bat --theme=TwoDark --paging=always -l man -p'"
 
 # batの色を設定
 export BAT_THEME="Dracula"
