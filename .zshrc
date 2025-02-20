@@ -171,6 +171,15 @@ alias ls="lsd --icon never"
 alias ll="ls -al"
 alias bat='~/dotfiles/bat/target/release/bat'
 
+m() {
+  if [ "$(uname)" = "Darwin" ]; then
+    command man "$@" #| eval "$MANPAGER"
+  else
+    command man --no-hyphenation --no-justification "$@" | eval "$MANPAGER"
+  fi
+}
+alias man='m'
+
 if command -v tac >/dev/null 2>&1; then
   alias rtac='tac'
 else
