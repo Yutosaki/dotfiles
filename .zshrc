@@ -28,7 +28,7 @@ export BAT_THEME="Dracula"
 # cdした後にlsするhook
 chpwd() {
     if [[ $(pwd) != $HOME ]]; then;
-        ls
+        lsd --icon=never
     fi
 }
 
