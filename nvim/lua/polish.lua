@@ -4,7 +4,10 @@
 -- fit in the normal config locations above can go here
 
 -- Set up custom filetypes
-vim.opt.relativenumber = false -- 相対行番号を無効にする
+vim.opt.number = true
+vim.opt.relativenumber = false
+vim.opt.showmode = true
+vim.opt.laststatus = 2
 
 vim.filetype.add {
   pattern = {        -- 先にパターンを評価
