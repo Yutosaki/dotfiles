@@ -8,6 +8,8 @@ vim.opt.number = true
 vim.opt.relativenumber = false
 vim.opt.showmode = true
 vim.opt.laststatus = 2
+vim.opt.wrap = true
+vim.opt.linebreak = true
 
 vim.filetype.add {
   pattern = {        -- 先にパターンを評価
