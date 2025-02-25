@@ -24,6 +24,6 @@ you have to run this command in `~/dotfiles/bat`
 ```
 cargo build --release
 ```
-
-if you can't use lsd or something like that, you should install like this
+<br>
+if you can't use lsd or something like that (zsh, cargo ...), you should install like this
 `sudo apt install lsd` or `brew install lsd`
