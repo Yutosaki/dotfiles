@@ -156,6 +156,17 @@ compinit -d "$ZSH_COMPDUMP"
 eval "$(ssh-agent -s)"
 export APPLE_SSH_ADD_BEHAVIOR=Apple
 
+if [ "$(uname)" = "Darwin" ]; then
+    if [ ! -f ~/.ssh/config.Darwin ]; then
+        echo 'Match exec "test $(uname) = '\''Darwin'\''"' > ~/.ssh/config.Darwin
+        echo '    UseKeychain yes' >> ~/.ssh/config.Darwin
+    fi
+else
+    if [ ! -f ~/.ssh/config.Linux ]; then
+        echo '# Linux 専用の設定' > ~/.ssh/config.Linux
+    fi
+fi
+
 # ================================
 # シェル拡張
 # ================================
