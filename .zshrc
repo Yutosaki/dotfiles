@@ -83,7 +83,7 @@ parse_git_branch() {
 
 
 precmd() {
-  shellName=$(ps -p $$ -o comm=)
+  shellName=$(ps -p $$ -o comm= | tr -d '-')
   os=$(uname)
   if [ "$os" = "Darwin" ]; then
     PROMPT="%F{141}${shellName}%F{091}@%F{141}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
