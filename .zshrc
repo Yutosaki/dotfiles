@@ -81,8 +81,9 @@ parse_git_branch() {
   [[ -n $branch ]] && echo " %F{221}$branch%f"
 }
 
+
 precmd() {
-  shellName=$(basename "$SHELL")
+  shellName=$(ps -p $$ -o comm=)
   os=$(uname)
   if [ "$os" = "Darwin" ]; then
     PROMPT="%F{141}${shellName}%F{091}@%F{141}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
