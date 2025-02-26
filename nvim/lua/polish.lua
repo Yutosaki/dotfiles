@@ -23,3 +23,12 @@ vim.filetype.add {
   },
 }
 
+local keymap = vim.keymap
+
+keymap.set('n', 'J', ':m .+1<CR>==', { noremap = true, silent = true })
+keymap.set('n', 'K', ':m .-2<CR>==', { noremap = true, silent = true })
+-- ビジュアルモード
+keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
+-- ビジュアルモードで "p" に "_dP" をマッピング
+keymap.set("x", "p", '"_dP', {noremap = true, silent = true})
