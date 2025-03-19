@@ -9,10 +9,10 @@ git clone "this repository"
 
 sh settings.sh
 
-ln -snf ~/dotfiles/.zshrc ~/.zshrc # and so on... (.gitconfig .bashrc .vimrc)
+ln -snf ~/dotfiles/.zshrc ~/.zshrc # and so on... (if you want to see all, you should execute ll)
 ln -s ~/dotfiles/nvim ~/.config
 
-source ~/.zshrc
+source ~/.zshrc (you should restart terminal coz there are some files you should load)
 ```
 
 
