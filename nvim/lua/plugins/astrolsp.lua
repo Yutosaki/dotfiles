@@ -1,4 +1,6 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- lua/plugins/astrolsp.lua
+-- 次の行を削除して設定を有効化してください
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 -- AstroLSP allows you to customize the features in AstroNvim's LSP configuration engine
 -- Configuration documentation can be found with `:h astrolsp`
@@ -44,7 +46,25 @@ return {
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
     config = {
-      -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
+      clangd = { 
+        cmd = { 
+          "clangd", 
+          "--header-insertion=never",
+          "--query-driver=/**/*",
+          "--all-scopes-completion",
+          "--completion-style=detailed",
+        },
+        root_dir = function()
+          return vim.fn.getcwd()
+        end,
+        init_options = {
+          compilationDatabasePath = ".",
+          fallbackFlags = {
+            "-I" .. vim.fn.getcwd() .. "/include",
+            "-I./include"
+          },
+        },
+      },
     },
     -- customize how language servers are attached
     handlers = {
