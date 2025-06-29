@@ -8,7 +8,8 @@ if not (vim.env.LAZY or (vim.uv or vim.loop).fs_stat(lazypath)) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-
+vim.opt.display:append("lastline")
+vim.g.neovide_font_name = "Hack Nerd Font Mono"
 -- validate that lazy is available
 if not pcall(require, "lazy") then
   -- stylua: ignore
@@ -16,6 +17,14 @@ if not pcall(require, "lazy") then
   vim.fn.getchar()
   vim.cmd.quit()
 end
+
+vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
+  pattern = "*",
+  callback = function()
+    vim.opt.display = "lastline"
+    vim.opt.scrolloff = 0
+  end
+})
 
 require "lazy_setup"
 require "polish"
