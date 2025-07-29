@@ -173,6 +173,7 @@ fi
 # ================================
 source ~/dotfiles/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+bindkey '^L' autosuggest-accept
 
 # ================================
 # エイリアス
@@ -182,6 +183,7 @@ alias paco="$HOME/francinette/tester.sh"
 alias ls="lsd --icon never"
 alias ll="ls -al"
 alias bat='~/dotfiles/bat/target/release/bat'
+alias tmp="cd /tmp"
 
 m() {
   if [ "$(uname)" = "Darwin" ]; then
