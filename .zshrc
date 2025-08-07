@@ -35,8 +35,11 @@ chpwd() {
 # ================================
 # パス設定
 # ================================
-export PATH="/usr/local/bin:$PATH"
-export GOPATH="$HOME/Go"
+export PATH="$PATH:/bin"
+export PATH="$PATH:/sbin"
+export PATH="$PATH:/usr/bin"
+export PATH="$PATH:/usr/sbin"
+export PATH="$PATH:/usr/local/bin"
 export PATH="$PATH:$GOPATH/bin"
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/.npm-global/bin"
@@ -46,10 +49,17 @@ export PATH="$PATH:$HOME/development/flutter/bin"
 export PATH="$PATH:$HOME/.config/nvim"
 export PATH="$PATH:$HOME/dotfiles/nvim-os/nvim-macos-arm64/bin"
 export PATH="$PATH:$HOME/dotfiles/nvim-os/nvim-linux-arm64/bin"
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-export PATH="/opt/homebrew/opt/icu4c/bin:$PATH"
-export PATH="/opt/homebrew/opt/icu4c/sbin:$PATH"
+export PATH="$PATH:/opt/homebrew/bin"
+export PATH="$PATH:/opt/homebrew/opt/libpq/bin"
+export PATH="$PATH:/opt/homebrew/opt/icu4c/bin"
+export PATH="$PATH:/opt/homebrew/opt/icu4c/sbin"
+
+export GOPATH="$HOME/Go"
+
+export MANPATH="$MANPATH:/usr/share/man"
+export MANPATH="$MANPATH:/usr/local/share/man"
+export MANPATH="$MANPATH:/Library/TeX/texbin/man/man1"
+export MANPATH="$MANPATH:/Library/TeX/texbin/man/man3"
 
 # Lima 環境のためのパス追加
 export PATH="$PATH:/usr/sbin:/sbin"
