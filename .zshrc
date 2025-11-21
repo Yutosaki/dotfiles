@@ -50,6 +50,7 @@ export PATH="$PATH:$HOME/.config/nvim"
 export PATH="$PATH:$HOME/dotfiles/nvim-os/nvim-macos-arm64/bin"
 export PATH="$PATH:$HOME/dotfiles/nvim-os/nvim-linux-arm64/bin"
 export PATH="$PATH:/opt/homebrew/bin"
+export PATH="$PATH:/opt/homebrew/opt/llvm/bin"
 export PATH="$PATH:/opt/homebrew/opt/libpq/bin"
 export PATH="$PATH:/opt/homebrew/opt/icu4c/bin"
 export PATH="$PATH:/opt/homebrew/opt/icu4c/sbin"
@@ -194,6 +195,7 @@ alias ls="lsd --icon never"
 alias ll="ls -al"
 alias bat='~/dotfiles/bat/target/release/bat'
 alias tmp="cd /tmp"
+alias tm="tmux"
 
 m() {
   if [ "$(uname)" = "Darwin" ]; then
