@@ -1,0 +1,47 @@
+#cloud-config
+
+# system update & upgrade
+repo_update: true
+repo_upgrade: false
+package_upgrade: false
+
+users:
+  - default
+
+# インストールするパッケージ一覧
+# packages:
+#   - zsh
+#   - tmux
+#   - git
+#   - neovim
+#   - build-essential
+#   - ripgrep
+#   - fd-find
+#   - curl
+
+# VM上でsshキーを使用出来る様に設定する
+write_files:
+  - path: /home/ubuntu/.ssh/id_rsa
+    permissions: '0600'
+    content: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      plz copy your key here
+      -----END OPENSSH PRIVATE KEY-----
+        
+  - path: /home/ubuntu/.ssh/config
+    permissions: '0600'
+    owner: ubuntu:ubuntu
+    content: |
+      Host github.com
+        StrictHostKeyChecking no
+        User git
+
+# 最初に実行するコマンド一式
+runcmd:
+  # ホームディレクトリの所有者をubuntuに変更する
+  - chown -R ubuntu:ubuntu /home/ubuntu
+  - chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+  
+# sshで接続するための公開鍵の設定
+ssh_authorized_keys:
+  - ssh-ed25519 mysshekyhere!!!
