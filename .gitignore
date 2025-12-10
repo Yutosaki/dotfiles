@@ -3,4 +3,5 @@ zsh-autosuggestions/
 zsh-syntax-highlighting/
 fzf/
 bat/
+multipass/init.yaml
 
