@@ -4,9 +4,11 @@
 if [ "$(uname)" = "Linux" ]; then
     sudo apt-get update
     sudo apt-get install fzf
+    sudo apt install lsd
 elif [ "$(uname)" = "Darwin" ]; then
     brew update
     brew install fzf
+    brew install lsd
 else
     echo "Unsupported OS"
     exit 1
