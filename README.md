@@ -5,10 +5,12 @@
 run in your home directory
 
 ```
-git clone "this repository"
-
+git clone git@github.com:Yutosaki/dotfiles.git
+```
+```
 sh settings.sh
-
+```
+```
 ln -snf ~/dotfiles/.zshrc ~/.zshrc # and so on... (if you want to see all, you should execute ll)
 ln -s ~/dotfiles/nvim ~/.config
 
