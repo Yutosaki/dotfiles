@@ -43,26 +43,30 @@ multipass exec "$VM_NAME" -- bash << 'EOF'
     echo "📂 dotfilesディレクトリに移動しました: $(pwd)"
 
     echo "🔗 シンボリックリンク (ln -snf) を作成中..."
-    # .configディレクトリがないとnvimのリンクでエラーになるので作成
     mkdir -p /home/ubuntu/.config
 
-    # リンク設定（必要に応じて追加してください）
+    # --- リンク設定 ---
     ln -snf /home/ubuntu/dotfiles/.zshrc /home/ubuntu/.zshrc
-    ln -snf /home/ubuntu/dotfiles/nvim /home/ubuntu/.config/nvim
+    ln -snf /home/ubuntu/dotfiles/.bashrc /home/ubuntu/.bashrc
+    ln -snf /home/ubuntu/dotfiles/.vimrc /home/ubuntu/.vimrc
+    ln -snf /home/ubuntu/dotfiles/.gitconfig /home/ubuntu/.gitconfig
     ln -snf /home/ubuntu/dotfiles/.tmux.conf /home/ubuntu/.tmux.conf
+    ln -snf /home/ubuntu/dotfiles/nvim /home/ubuntu/.config/nvim
+    
+    # setting.sh も実行権限をつけておく
+    chmod +x setting.sh
 
     echo "⚙️  設定スクリプト (setting.sh) を実行中..."
-    chmod +x setting.sh
     ./setting.sh
 
-    echo "🐚 デフォルトシェルをzshに変更..."
-    sudo chsh -s $(which zsh) ubuntu
+    echo "🐚 デフォルトシェルをzshに強制変更..."
+    # chsh ではなく usermod を使うことで確実に変更します
+    sudo usermod -s $(which zsh) ubuntu
 
     echo "🎉 VM内セットアップ完了！"
 EOF
 
 # --- VMのIPアドレスを取得 ---
-# multipass info コマンドから "IPv4" の行を探し、IPアドレス部分だけを抜き出します
 VM_IP=$(multipass info "$VM_NAME" | grep IPv4 | awk '{print $2}')
 
 echo "✨ すべての作業が完了しました！"
