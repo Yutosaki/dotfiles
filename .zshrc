@@ -196,6 +196,7 @@ alias ll="ls -al"
 alias bat='~/dotfiles/bat/target/release/bat'
 alias tmp="cd /tmp"
 alias tm="tmux"
+alias mp="multipass"
 
 m() {
   if [ "$(uname)" = "Darwin" ]; then
