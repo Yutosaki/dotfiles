@@ -26,6 +26,5 @@ you have to run this command in `~/dotfiles/bat`
 cargo build --release
 ```
 <br>
-if you can't use lsd or something like that (zsh, cargo ...), you should install like this
 
-`sudo apt install lsd` or `brew install lsd`
+if you want to use multipass, you should change file name `init.yaml.template` to `init.yaml` in multipass directory and paste your ssh key!
