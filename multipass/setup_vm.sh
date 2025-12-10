@@ -39,7 +39,6 @@ multipass exec "$VM_NAME" -- bash << 'EOF'
     rm -rf /home/ubuntu/dotfiles
     git clone git@github.com:Yutosaki/dotfiles.git /home/ubuntu/dotfiles
 
-    # 【重要】ディレクトリ移動！ここが原因でした
     cd /home/ubuntu/dotfiles
     echo "📂 dotfilesディレクトリに移動しました: $(pwd)"
 
@@ -47,12 +46,10 @@ multipass exec "$VM_NAME" -- bash << 'EOF'
     # .configディレクトリがないとnvimのリンクでエラーになるので作成
     mkdir -p /home/ubuntu/.config
 
-    # ご要望のリンク設定（必要に応じて追加してください）
+    # リンク設定（必要に応じて追加してください）
     ln -snf /home/ubuntu/dotfiles/.zshrc /home/ubuntu/.zshrc
     ln -snf /home/ubuntu/dotfiles/nvim /home/ubuntu/.config/nvim
     ln -snf /home/ubuntu/dotfiles/.tmux.conf /home/ubuntu/.tmux.conf
-    # tmuxなど他の設定ファイルがあればここに追加
-    # ln -snf /home/ubuntu/dotfiles/.tmux.conf /home/ubuntu/.tmux.conf
 
     echo "⚙️  設定スクリプト (setting.sh) を実行中..."
     chmod +x setting.sh
@@ -64,6 +61,15 @@ multipass exec "$VM_NAME" -- bash << 'EOF'
     echo "🎉 VM内セットアップ完了！"
 EOF
 
+# --- VMのIPアドレスを取得 ---
+# multipass info コマンドから "IPv4" の行を探し、IPアドレス部分だけを抜き出します
+VM_IP=$(multipass info "$VM_NAME" | grep IPv4 | awk '{print $2}')
+
 echo "✨ すべての作業が完了しました！"
 echo "以下のコマンドでログインできます:"
-echo "multipass shell $VM_NAME"
+echo ""
+echo "🔹 Multipassシェルで接続:"
+echo "   multipass shell $VM_NAME"
+echo ""
+echo "🔹 SSHで直接接続:"
+echo "   ssh ubuntu@$VM_IP"
