@@ -19,7 +19,7 @@ if [ "$(uname)" = "Linux" ]; then
         sudo apt-get remove -y fzf
     fi
 
-    sudo apt-get install -y lsd bat build-essential unzip
+    sudo apt-get install -y lsd bat build-essential unzip valgrind
     
     if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
         mkdir -p ~/.local/bin
@@ -32,7 +32,7 @@ elif [ "$(uname)" = "Darwin" ]; then
         exit 1
     fi
     brew update
-    brew install lsd bat
+    brew install lsd bat valgrind
 else
     echo "❌ Unsupported OS"
     exit 1
