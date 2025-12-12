@@ -22,4 +22,5 @@ cargo build --release
 ```
 <br>
 
+# other
 if you want to use multipass, you should change file name `init.yaml.template` to `init.yaml` in multipass directory and paste your ssh key!
