@@ -186,6 +186,9 @@ source ~/dotfiles/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 bindkey '^L' autosuggest-accept
 
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # ================================
 # エイリアス
 # ================================
