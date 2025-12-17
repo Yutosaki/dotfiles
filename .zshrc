@@ -277,4 +277,4 @@ export PATH
 # .brewconfig.zsh が存在する場合のみ読み込む
 if [ -f "$HOME/.brewconfig.zsh" ]; then
     source "$HOME/.brewconfig.zsh"
-fit
+fi
