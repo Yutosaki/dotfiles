@@ -83,26 +83,6 @@ export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
 export LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
 
-# # ================================
-# # プロンプト設定
-# # ================================
-# autoload -Uz colors && colors
-# parse_git_branch() {
-#   local branch=$(git branch --show-current 2>/dev/null)
-#   [[ -n $branch ]] && echo " %F{221}$branch%f"
-# }
-# 
-# 
-# precmd() {
-#   shellName=$(ps -p $$ -o comm= | tr -d '-')
-#   os=$(uname)
-#   if [ "$os" = "Darwin" ]; then
-#     PROMPT="%F{141}${shellName}%F{091}@%F{141}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
-#   else
-#     PROMPT="%F{050}${shellName}%F{075}@%F{050}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
-#   fi
-# }
-
 # ================================
 # プロンプト設定
 # ================================
@@ -112,16 +92,13 @@ autoload -Uz vcs_info
 # プロンプト内で変数を展開・コマンド置換を行うための設定
 setopt prompt_subst
 
-# vcs_info (Gitステータス) のスタイル設定
-# 記事を参考に、フォーマットとアクション（rebase中など）を設定
 zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"   # ステージされた変更がある時
-zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"    # ステージされていない変更がある時
-zstyle ':vcs_info:*' formats "%F{green}(%b)%f%c%u" # 通常時: (ブランチ名)!+
-zstyle ':vcs_info:*' actionformats '%F{red}(%b|%a)%f%c%u' # rebase/merge中など
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
+zstyle ':vcs_info:*' formats "%F{121}%b%f%c%u"
+zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f%c%u'
 zstyle ':vcs_info:*' enable git svn
-zstyle ':vcs_info:*' disable-patterns ''  # ← これを追加（除外パターンを空にする）
-# (もし check-for-changes true の行があれば、その近くに書いてください)
+zstyle ':vcs_info:*' disable-patterns ''
 
 # コマンド実行前に毎回呼ばれる関数
 precmd() {
@@ -164,8 +141,8 @@ precmd() {
     # 3. Git情報 (vcs_infoで取得した文字列)
     local p_git='${vcs_info_msg_0_}'
     
-    # 4. プロンプト記号 (直前のコマンドが成功なら白の %, 失敗なら赤の %)
-    local p_symbol="%(?.%F{reset}.%F{red})%#%f"
+    # 4. プロンプト記号
+    local p_symbol="%F{reset}$%f"
 
     # 結合して設定
     PROMPT="${p_user_host} ${p_dir} ${p_git} ${p_symbol} "
