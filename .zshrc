@@ -97,7 +97,7 @@ zstyle ':vcs_info:git:*' stagedstr "%F{228}!"
 zstyle ':vcs_info:git:*' unstagedstr "%F{176}+"
 zstyle ':vcs_info:*' formats "%F{121}%b%f%c%u"
 zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f%c%u'
-zstyle ':vcs_info:*' enable git svn
+zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:*' disable-patterns ''
 
 # コマンド実行前に毎回呼ばれる関数
