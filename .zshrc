@@ -83,24 +83,89 @@ export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
 export LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
 
+# # ================================
+# # プロンプト設定
+# # ================================
+# autoload -Uz colors && colors
+# parse_git_branch() {
+#   local branch=$(git branch --show-current 2>/dev/null)
+#   [[ -n $branch ]] && echo " %F{221}$branch%f"
+# }
+# 
+# 
+# precmd() {
+#   shellName=$(ps -p $$ -o comm= | tr -d '-')
+#   os=$(uname)
+#   if [ "$os" = "Darwin" ]; then
+#     PROMPT="%F{141}${shellName}%F{091}@%F{141}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
+#   else
+#     PROMPT="%F{050}${shellName}%F{075}@%F{050}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
+#   fi
+# }
+
 # ================================
 # プロンプト設定
 # ================================
 autoload -Uz colors && colors
-parse_git_branch() {
-  local branch=$(git branch --show-current 2>/dev/null)
-  [[ -n $branch ]] && echo " %F{221}$branch%f"
-}
+autoload -Uz vcs_info
 
+# プロンプト内で変数を展開・コマンド置換を行うための設定
+setopt prompt_subst
 
+# vcs_info (Gitステータス) のスタイル設定
+# 記事を参考に、フォーマットとアクション（rebase中など）を設定
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"   # ステージされた変更がある時
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"    # ステージされていない変更がある時
+zstyle ':vcs_info:*' formats "%F{green}(%b)%f%c%u" # 通常時: (ブランチ名)!+
+zstyle ':vcs_info:*' actionformats '%F{red}(%b|%a)%f%c%u' # rebase/merge中など
+
+# コマンド実行前に毎回呼ばれる関数
 precmd() {
-  shellName=$(ps -p $$ -o comm= | tr -d '-')
-  os=$(uname)
-  if [ "$os" = "Darwin" ]; then
-    PROMPT="%F{141}${shellName}%F{091}@%F{141}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
-  else
-    PROMPT="%F{050}${shellName}%F{075}@%F{050}%m %F{212}%~$(parse_git_branch) %F{reset}%# "
-  fi
+    # vcs_info を実行して情報を更新
+    vcs_info
+
+    # シェル名を取得 (例: zsh)
+    local shellName=$(ps -p $$ -o comm= | tr -d '-')
+    
+    # OS判定
+    local os=$(uname)
+    
+    # OSごとの色設定
+    local color_user
+    local color_at
+    local color_host
+    local color_path
+    
+    if [ "$os" = "Darwin" ]; then
+        # Mac用カラー (紫系)
+        color_user="141"
+        color_at="091"
+        color_host="141"
+        color_path="212"
+    else
+        # Linux用カラー (緑/青系)
+        color_user="050"
+        color_at="075"
+        color_host="050"
+        color_path="212"
+    fi
+
+    # プロンプトの構築
+    # 1. ユーザー名@ホスト名
+    local p_user_host="%F{${color_user}}${shellName}%F{${color_at}}@%F{${color_host}}%m"
+    
+    # 2. カレントディレクトリ (~/...)
+    local p_dir="%F{${color_path}}%~"
+    
+    # 3. Git情報 (vcs_infoで取得した文字列)
+    local p_git='${vcs_info_msg_0_}'
+    
+    # 4. プロンプト記号 (直前のコマンドが成功なら白の %, 失敗なら赤の %)
+    local p_symbol="%(?.%F{reset}.%F{red})%#%f"
+
+    # 結合して設定
+    PROMPT="${p_user_host} ${p_dir} ${p_git} ${p_symbol} "
 }
 
 # ================================
