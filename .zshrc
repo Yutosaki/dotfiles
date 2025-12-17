@@ -119,6 +119,9 @@ zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"   # ステージされた変更
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"    # ステージされていない変更がある時
 zstyle ':vcs_info:*' formats "%F{green}(%b)%f%c%u" # 通常時: (ブランチ名)!+
 zstyle ':vcs_info:*' actionformats '%F{red}(%b|%a)%f%c%u' # rebase/merge中など
+zstyle ':vcs_info:*' enable git svn
+zstyle ':vcs_info:*' disable-patterns ''  # ← これを追加（除外パターンを空にする）
+# (もし check-for-changes true の行があれば、その近くに書いてください)
 
 # コマンド実行前に毎回呼ばれる関数
 precmd() {
