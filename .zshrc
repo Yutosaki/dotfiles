@@ -293,3 +293,6 @@ PATH="$PATH:/usr/sbin:/sbin"
 export PATH
 # Lima END
 
+
+# Load Homebrew config script
+source $HOME/.brewconfig.zsh
