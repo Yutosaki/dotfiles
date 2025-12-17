@@ -93,8 +93,8 @@ autoload -Uz vcs_info
 setopt prompt_subst
 
 zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
-zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
+zstyle ':vcs_info:git:*' stagedstr "%F{228}!"
+zstyle ':vcs_info:git:*' unstagedstr "%F{176}+"
 zstyle ':vcs_info:*' formats "%F{121}%b%f%c%u"
 zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f%c%u'
 zstyle ':vcs_info:*' enable git svn
