@@ -33,7 +33,20 @@ keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 -- ビジュアルモードで "p" に "_dP" をマッピング
 keymap.set("x", "p", '"_dP', {noremap = true, silent = true})
--- init.luaに追加
+
+local keymap = vim.keymap
+
+-- Vertical Split: <C-j> then \
+keymap.set('n', '<C-j>\\', ':vsplit<CR>', { noremap = true, silent = true, desc = "Vertical Split" })
+
+-- Horizontal Split: <C-j> then -
+keymap.set('n', '<C-j>-', ':split<CR>', { noremap = true, silent = true, desc = "Horizontal Split" })
+
+-- Move between splits easily
+keymap.set('n', '<C-h>', '<C-w>h', { silent = true }) -- Left
+keymap.set('n', '<C-j>', '<C-w>j', { silent = true }) -- Down
+keymap.set('n', '<C-k>', '<C-w>k', { silent = true }) -- Up
+keymap.set('n', '<C-l>', '<C-w>l', { silent = true }) -- Right
 
 -- ソースファイルの実装にジャンプする関数
 vim.keymap.set('n', 'gi', function()
