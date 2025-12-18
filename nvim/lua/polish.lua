@@ -48,6 +48,22 @@ keymap.set('n', '<C-j>', '<C-w>j', { silent = true }) -- Down
 keymap.set('n', '<C-k>', '<C-w>k', { silent = true }) -- Up
 keymap.set('n', '<C-l>', '<C-w>l', { silent = true }) -- Right
 
+local keymap = vim.keymap
+
+-- Move to the previous buffer (Left)
+keymap.set('n', '<S-h>', ':bprevious<CR>', { noremap = true, silent = true, desc = "Prev Buffer" })
+
+-- Move to the next buffer (Right)
+keymap.set('n', '<S-l>', ':bnext<CR>', { noremap = true, silent = true, desc = "Next Buffer" })
+
+-- Close the current buffer
+-- Use AstroNvim's smart close instead of raw :bdelete
+keymap.set("n", "C", function()
+  -- This function from AstroCore handles closing buffers safely
+  -- without closing your window or exiting Neovim
+  require("astrocore.buffer").close()
+end, { desc = "Close buffer safely" })
+
 -- ソースファイルの実装にジャンプする関数
 vim.keymap.set('n', 'gi', function()
   local word = vim.fn.expand('<cword>') -- カーソル下の単語
