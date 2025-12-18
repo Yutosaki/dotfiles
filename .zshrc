@@ -229,7 +229,10 @@ fi
 # ================================
 source ~/dotfiles/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-bindkey '^L' autosuggest-accept
+bindkey '^H' backward-char
+bindkey '^L' forward-char
+bindkey '^J' down-line-or-history
+bindkey '^K' up-line-or-history
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
