@@ -39,7 +39,7 @@ elif [ "$(uname)" = "Darwin" ]; then
         exit 1
     fi
     brew update
-    brew install lsd bat valgrind ripgrep tmux
+    brew install lsd bat ripgrep tmux
 else
     echo "❌ Unsupported OS"
     exit 1
