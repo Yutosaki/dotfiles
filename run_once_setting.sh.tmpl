@@ -69,12 +69,18 @@ if ! command -v nvim &> /dev/null; then
         echo "   👉 Detected x86_64 architecture."
     fi
 
-    # ダウンロードと展開
-    curl -LO "https://github.com/neovim/neovim/releases/latest/download/$NVIM_ASSET"
+    # URLを定義
+    URL="https://github.com/neovim/neovim/releases/latest/download/$NVIM_ASSET"
+    echo "⬇️ Downloading from: $URL"
+
+    # -L: リダイレクトを追跡
+    # -f: サーバーエラー(404等)ならファイルを保存せずに失敗させる
+    # -O: サーバー上のファイル名で保存
+    curl -L -f -O "$URL"
     
-    # 失敗チェック
+    # ダウンロード失敗チェック
     if [ $? -ne 0 ]; then
-        echo "❌ Download failed."
+        echo "❌ Download failed! URL or Network issue."
         exit 1
     fi
 
