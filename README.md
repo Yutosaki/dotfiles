@@ -2,11 +2,12 @@
 
 # how to use
 
-run in your home directory
+run in your home directory (when you use apt)
 
 ```
 apt update && apt install curl -y
 ```
+
 ```
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Yutosaki
 ```
