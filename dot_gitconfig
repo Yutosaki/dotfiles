@@ -19,5 +19,5 @@
 [init]
 	templateDir = /Users/sasakiyuto/.git_template
 [pager]
-    diff = ~/dotfiles/bat/target/release/bat --paging=always
-    show = ~/dotfiles/bat/target/release/bat --paging=always
+    diff = bat --paging=always
+    show = bat --paging=always
