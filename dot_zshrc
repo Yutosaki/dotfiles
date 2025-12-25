@@ -218,6 +218,7 @@ if [ "$(uname)" = "Darwin" ]; then
     fi
 else
     if [ ! -f ~/.ssh/config.Linux ]; then
+        mkdir -p ~/.ssh
         echo '# Linux 専用の設定' > ~/.ssh/config.Linux
     fi
 fi
