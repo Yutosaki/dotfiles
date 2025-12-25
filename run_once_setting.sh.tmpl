@@ -102,11 +102,12 @@ else
     brew update
     brew install lsd bat ripgrep tmux neovim node
     
-    # GUIアプリ (Cask) として Karabiner-Elements を追加
-    if ! brew list --cask | grep -q karabiner-elements; then
-        echo "⌨️ Installing Karabiner-Elements..."
-        brew install --cask karabiner-elements
-    fi
+# "/Applications/Karabiner-Elements.app" というフォルダがない場合のみインストール
+if [ ! -d "/Applications/Karabiner-Elements.app" ]; then
+    echo "⌨️ Installing Karabiner-Elements..."
+    brew install --cask karabiner-elements
+else
+    echo "✅ Karabiner-Elements is already installed."
 fi
 {{ end -}}
 
