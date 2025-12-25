@@ -97,7 +97,13 @@ if ! command -v brew &> /dev/null; then
     echo "🍺 Homebrew not found. Skipping brew install."
 else
     brew update
-    brew install lsd bat ripgrep tmux neovim
+    brew install lsd bat ripgrep tmux neovim node
+    
+    # GUIアプリ (Cask) として Karabiner-Elements を追加
+    if ! brew list --cask | grep -q karabiner-elements; then
+        echo "⌨️ Installing Karabiner-Elements..."
+        brew install --cask karabiner-elements
+    fi
 fi
 {{ end -}}
 
