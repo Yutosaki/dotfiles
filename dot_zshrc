@@ -208,7 +208,10 @@ compinit -d "$ZSH_COMPDUMP"
 # ================================
 # SSH 設定
 # ================================
-eval "$(ssh-agent -s)"
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   eval "$(ssh-agent -s)" > /dev/null
+fi
+
 export APPLE_SSH_ADD_BEHAVIOR=Apple
 
 if [ "$(uname)" = "Darwin" ]; then
