@@ -20,7 +20,7 @@ SAVEHIST=1000000
 setopt extended_glob
 
 # manでの表示をbatにする
-export MANPAGER="sh -c 'col -bx | $HOME/dotfiles/bat/target/release/bat --theme=TwoDark --paging=always -l man -p'"
+export MANPAGER="sh -c 'col -bx | bat --theme=TwoDark --paging=always -l man -p'"
 
 # batの色を設定
 export BAT_THEME="Dracula"
@@ -47,8 +47,6 @@ export PATH="$PATH:$HOME/.local/bin/flutter/bin"
 export PATH="$PATH:$HOME/opt/anaconda3/bin/conda"
 export PATH="$PATH:$HOME/development/flutter/bin"
 export PATH="$PATH:$HOME/.config/nvim"
-export PATH="$PATH:$HOME/dotfiles/nvim-os/nvim-macos-arm64/bin"
-export PATH="$PATH:$HOME/dotfiles/nvim-os/nvim-linux-arm64/bin"
 export PATH="$PATH:/opt/homebrew/bin"
 export PATH="$PATH:/opt/homebrew/opt/llvm/bin"
 export PATH="$PATH:/opt/homebrew/opt/libpq/bin"
@@ -151,8 +149,8 @@ precmd() {
 # ================================
 # fzf 設定
 # ================================
-if [[ -f "$HOME/dotfiles/fzf/shell/key-bindings.zsh" ]]; then
-    source "$HOME/dotfiles/fzf/shell/key-bindings.zsh"
+if [[ -f "$HOME/.fzf/shell/key-bindings.zsh" ]]; then
+    source "$HOME/.fzf/shell/key-bindings.zsh"
 fi
 
 # fzfの設定
@@ -187,8 +185,8 @@ zle -N __fzf_history__
 bindkey '^R' __fzf_history__
 
 # fzf-tab の設定
-fpath+=($HOME/dotfiles/fzf-tab) # fpath に fzf-tab を追加
-source $HOME/dotfiles/fzf-tab/fzf-tab.plugin.zsh
+fpath+=($HOME/.local/share/zsh/plugins/fzf-tab)
+source $HOME/.local/share/zsh/plugins/fzf-tab/fzf-tab.plugin.zsh
 
 # fzf-tab の詳細設定
 zstyle ':completion:*:git-checkout:*' sort false
@@ -227,8 +225,8 @@ fi
 # ================================
 # シェル拡張
 # ================================
-source ~/dotfiles/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.local/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.local/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 bindkey '^H' backward-char
 bindkey '^L' forward-char
 bindkey '^J' down-line-or-history
@@ -240,11 +238,8 @@ export LC_ALL=en_US.UTF-8
 # ================================
 # エイリアス
 # ================================
-alias francinette="$HOME/francinette/tester.sh"
-alias paco="$HOME/francinette/tester.sh"
 alias ls="lsd --icon never"
 alias ll="ls -al"
-alias bat='~/dotfiles/bat/target/release/bat'
 alias tmp="cd /tmp"
 alias tm="tmux"
 alias mp="multipass"
