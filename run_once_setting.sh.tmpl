@@ -4,6 +4,9 @@
 #!/bin/zsh
 {{ end -}}
 
+# エラーが発生したら即座にスクリプトを停止する
+set -e
+
 # root権限チェック
 SUDO_CMD=""
 if [ "$(id -u)" -ne 0 ]; then
@@ -42,7 +45,7 @@ fi
 $SUDO_CMD apt-get update
 $SUDO_CMD apt-get install -y \
     build-essential unzip valgrind git curl zsh tmux tzdata locales \
-    ripgrep bat lsd node
+    ripgrep bat lsd nodejs npm
 
 # batcat対応
 if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
