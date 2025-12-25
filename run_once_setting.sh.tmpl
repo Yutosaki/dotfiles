@@ -42,7 +42,7 @@ fi
 $SUDO_CMD apt-get update
 $SUDO_CMD apt-get install -y \
     build-essential unzip valgrind git curl zsh tmux tzdata locales \
-    ripgrep bat lsd
+    ripgrep bat lsd node
 
 # batcat対応
 if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
