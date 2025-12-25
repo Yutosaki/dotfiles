@@ -1,9 +1,10 @@
+{{ if eq .chezmoi.os "linux" -}}
 #!/bin/bash
+{{ else -}}
+#!/bin/zsh
+{{ end -}}
 
-# dotfilesディレクトリのパス
-DOTFILES_DIR="$HOME/dotfiles"
-
-# 実行ユーザーがrootかどうか判定
+# root権限チェック用
 SUDO_CMD=""
 if [ "$(id -u)" -ne 0 ]; then
     SUDO_CMD="sudo"
@@ -11,106 +12,106 @@ fi
 
 echo "🚀 セットアップを開始します..."
 
-# --- 1. システムパッケージ & 必須ツール ---
-echo "📦 システムパッケージをインストール中..."
+# -----------------------------------------------------------------------------
+# 1. OSごとのインストール処理 (Linux / Darwin)
+# -----------------------------------------------------------------------------
+{{ if eq .chezmoi.os "linux" -}}
+echo "🐧 Linux用のセットアップを実行中..."
 
-if [ "$(uname)" = "Linux" ]; then
-    $SUDO_CMD apt-get update
-
-    echo "🔨 必須ツールをインストール..."
-    $SUDO_CMD apt-get install -y \
-        build-essential unzip valgrind git curl zsh tmux
-
-    # ユーティリティ (ripgrep, bat, lsd)
-    $SUDO_CMD apt-get install -y ripgrep || echo "⚠️ ripgrep missing in apt (will use cargo)"
-    $SUDO_CMD apt-get install -y bat || echo "⚠️ bat missing in apt (will use cargo)"
-    $SUDO_CMD apt-get install -y lsd || echo "⚠️ lsd missing in apt (will use cargo)"
-
-    # batcatリンク (Ubuntu対応)
-    if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
-        mkdir -p ~/.local/bin
-        ln -s /usr/bin/batcat ~/.local/bin/bat
-        export PATH="$HOME/.local/bin:$PATH"
-    fi
-
-elif [ "$(uname)" = "Darwin" ]; then
-    if ! command -v brew &> /dev/null; then
-        echo "🍺 Homebrew not found. Exiting."
-        exit 1
-    fi
-    brew update
-    brew install lsd bat ripgrep tmux
-else
-    echo "❌ Unsupported OS"
-    exit 1
+# 対話モード無効化 & タイムゾーン設定
+export DEBIAN_FRONTEND=noninteractive
+if [ ! -f /etc/localtime ]; then
+    echo "⏰ タイムゾーンを Asia/Tokyo に設定..."
+    $SUDO_CMD ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+    echo "Asia/Tokyo" | $SUDO_CMD tee /etc/timezone
+    $SUDO_CMD dpkg-reconfigure --frontend noninteractive tzdata
 fi
 
-# --- 2. Rust (Cargo) ---
+# パッケージ更新 & 必須ツールインストール
+$SUDO_CMD apt-get update
+$SUDO_CMD apt-get install -y \
+    build-essential unzip valgrind git curl zsh tmux tzdata \
+    ripgrep bat lsd
+
+# Ubuntuのbatcat対応
+if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
+    mkdir -p ~/.local/bin
+    ln -s /usr/bin/batcat ~/.local/bin/bat
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# --- Neovim (Linux: GitHubからバイナリをダウンロード) ---
+if ! command -v nvim &> /dev/null; then
+    echo "🌑 Neovim (Linux Binary) をダウンロードしてインストール中..."
+    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    $SUDO_CMD rm -rf /opt/nvim
+    $SUDO_CMD tar -C /opt -xzf nvim-linux64.tar.gz
+    $SUDO_CMD ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
+    rm nvim-linux64.tar.gz
+    echo "✅ Neovim installed."
+else
+    echo "✅ Neovim is already installed."
+fi
+
+{{ else if eq .chezmoi.os "darwin" -}}
+echo "🍎 macOS用のセットアップを実行中..."
+
+if ! command -v brew &> /dev/null; then
+    echo "🍺 Homebrew not found. Skipping brew install."
+else
+    brew update
+    # Neovimを含めてインストール
+    brew install lsd bat ripgrep tmux neovim
+fi
+{{ end -}}
+
+# -----------------------------------------------------------------------------
+# 2. Rust (Cargo) & 共通ツール
+# -----------------------------------------------------------------------------
 if ! command -v cargo &> /dev/null; then
     echo "🦀 Rustをインストール中..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     source "$HOME/.cargo/env"
 fi
 
-# --- 3. 不足ツールのCargoインストール ---
+# Cargo経由でのツール補完 (OSのパッケージマネージャで入らなかった場合のみ)
 if ! command -v rg &> /dev/null; then cargo install ripgrep; fi
 if ! command -v lsd &> /dev/null; then cargo install lsd; fi
 if ! command -v bat &> /dev/null; then cargo install bat; fi
 
-# --- 4. Neovim 本体のインストール ---
-if ! command -v nvim &> /dev/null; then
-    echo "🌑 Neovimをインストール中..."
-    if [ "$(uname)" = "Linux" ]; then
-        curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-        $SUDO_CMD rm -rf /opt/nvim
-        $SUDO_CMD tar -C /opt -xzf nvim-linux64.tar.gz
-        $SUDO_CMD ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
-        rm nvim-linux64.tar.gz
-    elif [ "$(uname)" = "Darwin" ]; then
-        brew install neovim
-    fi
-fi
+# -----------------------------------------------------------------------------
+# 3. Zshプラグイン & FZF
+#    (保存先: ~/.local/share/zsh/plugins)
+# -----------------------------------------------------------------------------
+ZSH_PLUGIN_DIR="$HOME/.local/share/zsh/plugins"
+mkdir -p "$ZSH_PLUGIN_DIR"
 
-# --- 5. Dotfilesのリンク ---
-echo "🔗 設定ファイルのリンクを作成中..."
-
-mkdir -p "$HOME/.config"
-
-ln -snf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
-ln -snf "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
-ln -snf "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
-ln -snf "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
-ln -snf "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
-
-if [ "$(uname)" = "Darwin" ]; then
-    mkdir -p "$HOME/.config/karabiner"
-    ln -snf "$DOTFILES_DIR/karabiner-elements.json" "$HOME/.config/karabiner/karabiner.json"
-fi
-
-# --- 6. Zshプラグイン ---
 clone_if_not_exists() {
     REPO_URL=$1; DEST_DIR=$2
-    if [ ! -d "$DEST_DIR" ]; then git clone --depth 1 "$REPO_URL" "$DEST_DIR"; fi
-}
-mkdir -p "$DOTFILES_DIR"
-clone_if_not_exists "https://github.com/zsh-users/zsh-syntax-highlighting.git" "$DOTFILES_DIR/zsh-syntax-highlighting"
-clone_if_not_exists "https://github.com/zsh-users/zsh-autosuggestions" "$DOTFILES_DIR/zsh-autosuggestions"
-clone_if_not_exists "https://github.com/Aloxaf/fzf-tab" "$DOTFILES_DIR/fzf-tab"
-clone_if_not_exists "https://github.com/junegunn/fzf.git" "$DOTFILES_DIR/fzf"
-
-# --- 7. fzfセットアップ ---
-if [ -f "$DOTFILES_DIR/fzf/install" ]; then
-    "$DOTFILES_DIR/fzf/install" --all --no-bash --no-fish
-    if [ "$(uname)" = "Linux" ]; then
-        $SUDO_CMD ln -sf "$DOTFILES_DIR/fzf/bin/fzf" /usr/local/bin/fzf
+    if [ ! -d "$DEST_DIR" ]; then 
+        echo "⬇️ Cloning $DEST_DIR..."
+        git clone --depth 1 "$REPO_URL" "$DEST_DIR"
     fi
+}
+
+clone_if_not_exists "https://github.com/zsh-users/zsh-syntax-highlighting.git" "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
+clone_if_not_exists "https://github.com/zsh-users/zsh-autosuggestions" "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
+clone_if_not_exists "https://github.com/Aloxaf/fzf-tab" "$ZSH_PLUGIN_DIR/fzf-tab"
+
+# FZF本体のインストール
+FZF_DIR="$HOME/.fzf"
+if [ ! -d "$FZF_DIR" ]; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$FZF_DIR"
+    "$FZF_DIR/install" --all --no-bash --no-fish
 fi
 
-# --- 8. デフォルトシェル変更 ---
+# -----------------------------------------------------------------------------
+# 4. デフォルトシェル変更
+# -----------------------------------------------------------------------------
 ZSH_PATH=$(which zsh)
 if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
-    echo "🔄 デフォルトシェルをzshに変更..."
-    chsh -s "$ZSH_PATH" || echo "⚠️ 手動で実行してください: chsh -s $(which zsh)"
+    echo "🔄 デフォルトシェルをzshに変更します..."
+    chsh -s "$ZSH_PATH"
 fi
 
 echo "✨ セットアップ完了！"
