@@ -5,7 +5,7 @@
 run in your home directory (when you use apt)
 
 ```
-apt update && apt install curl -y
+apt update && apt install -y curl
 ```
 
 ```
