@@ -4,7 +4,7 @@
 #!/bin/zsh
 {{ end -}}
 
-# root権限チェック用
+# root権限チェック
 SUDO_CMD=""
 if [ "$(id -u)" -ne 0 ]; then
     SUDO_CMD="sudo"
@@ -12,14 +12,33 @@ fi
 
 echo "🚀 セットアップを開始します..."
 
+# ================================
+# 基本設定
+# ================================
+# Dockerコンテナなどで色が正しく出ない場合の対策
+if [ -z "$TMUX" ]; then
+    export TERM=xterm-256color
+fi
+
 # -----------------------------------------------------------------------------
-# 1. OSごとのインストール処理 (Linux / Darwin)
+# 1. Linux用セットアップ (ロケール・ツール・Neovim)
 # -----------------------------------------------------------------------------
 {{ if eq .chezmoi.os "linux" -}}
 echo "🐧 Linux用のセットアップを実行中..."
-
-# 対話モード無効化 & タイムゾーン設定
 export DEBIAN_FRONTEND=noninteractive
+
+# ロケール生成 (LC_ALLエラー対策)
+if ! command -v locale-gen &> /dev/null; then
+    $SUDO_CMD apt-get update
+    $SUDO_CMD apt-get install -y locales
+fi
+# en_US.UTF-8 がない場合は生成
+if ! grep -q "en_US.UTF-8" /etc/locale.gen; then
+    echo "en_US.UTF-8 UTF-8" | $SUDO_CMD tee -a /etc/locale.gen
+fi
+$SUDO_CMD locale-gen en_US.UTF-8
+
+# タイムゾーン設定
 if [ ! -f /etc/localtime ]; then
     echo "⏰ タイムゾーンを Asia/Tokyo に設定..."
     $SUDO_CMD ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
@@ -27,46 +46,71 @@ if [ ! -f /etc/localtime ]; then
     $SUDO_CMD dpkg-reconfigure --frontend noninteractive tzdata
 fi
 
-# パッケージ更新 & 必須ツールインストール
+# 必須ツールインストール
 $SUDO_CMD apt-get update
 $SUDO_CMD apt-get install -y \
-    build-essential unzip valgrind git curl zsh tmux tzdata \
+    build-essential unzip valgrind git curl zsh tmux tzdata locales \
     ripgrep bat lsd
 
-# Ubuntuのbatcat対応
+# batcat対応
 if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
     mkdir -p ~/.local/bin
     ln -s /usr/bin/batcat ~/.local/bin/bat
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# --- Neovim (Linux: GitHubからバイナリをダウンロード) ---
+# --- Neovim (アーキテクチャ自動判定) ---
 if ! command -v nvim &> /dev/null; then
-    echo "🌑 Neovim (Linux Binary) をダウンロードしてインストール中..."
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    echo "🌑 Neovim をインストールします..."
+    
+    # アーキテクチャ判定 (x86_64 or aarch64)
+    ARCH=$(uname -m)
+    NVIM_ASSET="nvim-linux64.tar.gz"
+    
+    if [ "$ARCH" = "aarch64" ]; then
+        echo "   👉 Detected ARM64 architecture."
+        NVIM_ASSET="nvim-linux-arm64.tar.gz"
+    else
+        echo "   👉 Detected x86_64 architecture."
+    fi
+
+    # ダウンロードと展開
+    curl -LO "https://github.com/neovim/neovim/releases/latest/download/$NVIM_ASSET"
+    
+    # 失敗チェック
+    if [ $? -ne 0 ]; then
+        echo "❌ Download failed."
+        exit 1
+    fi
+
     $SUDO_CMD rm -rf /opt/nvim
-    $SUDO_CMD tar -C /opt -xzf nvim-linux64.tar.gz
-    $SUDO_CMD ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
-    rm nvim-linux64.tar.gz
+    # 解凍 (tarのエラー防止のためにオプション調整)
+    $SUDO_CMD tar -C /opt -xzf "$NVIM_ASSET"
+    
+    # フォルダ名がアーキテクチャによって異なるためワイルドカードでリンク
+    $SUDO_CMD ln -sf /opt/nvim-linux*/bin/nvim /usr/local/bin/nvim
+    
+    rm "$NVIM_ASSET"
     echo "✅ Neovim installed."
 else
     echo "✅ Neovim is already installed."
 fi
 
 {{ else if eq .chezmoi.os "darwin" -}}
+# -----------------------------------------------------------------------------
+# 2. macOS用セットアップ
+# -----------------------------------------------------------------------------
 echo "🍎 macOS用のセットアップを実行中..."
-
 if ! command -v brew &> /dev/null; then
     echo "🍺 Homebrew not found. Skipping brew install."
 else
     brew update
-    # Neovimを含めてインストール
     brew install lsd bat ripgrep tmux neovim
 fi
 {{ end -}}
 
 # -----------------------------------------------------------------------------
-# 2. Rust (Cargo) & 共通ツール
+# 3. 共通処理: Rust & Zshプラグイン
 # -----------------------------------------------------------------------------
 if ! command -v cargo &> /dev/null; then
     echo "🦀 Rustをインストール中..."
@@ -74,15 +118,11 @@ if ! command -v cargo &> /dev/null; then
     source "$HOME/.cargo/env"
 fi
 
-# Cargo経由でのツール補完 (OSのパッケージマネージャで入らなかった場合のみ)
 if ! command -v rg &> /dev/null; then cargo install ripgrep; fi
 if ! command -v lsd &> /dev/null; then cargo install lsd; fi
 if ! command -v bat &> /dev/null; then cargo install bat; fi
 
-# -----------------------------------------------------------------------------
-# 3. Zshプラグイン & FZF
-#    (保存先: ~/.local/share/zsh/plugins)
-# -----------------------------------------------------------------------------
+# Zshプラグイン保存先
 ZSH_PLUGIN_DIR="$HOME/.local/share/zsh/plugins"
 mkdir -p "$ZSH_PLUGIN_DIR"
 
@@ -98,16 +138,13 @@ clone_if_not_exists "https://github.com/zsh-users/zsh-syntax-highlighting.git" "
 clone_if_not_exists "https://github.com/zsh-users/zsh-autosuggestions" "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 clone_if_not_exists "https://github.com/Aloxaf/fzf-tab" "$ZSH_PLUGIN_DIR/fzf-tab"
 
-# FZF本体のインストール
 FZF_DIR="$HOME/.fzf"
 if [ ! -d "$FZF_DIR" ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git "$FZF_DIR"
     "$FZF_DIR/install" --all --no-bash --no-fish
 fi
 
-# -----------------------------------------------------------------------------
-# 4. デフォルトシェル変更
-# -----------------------------------------------------------------------------
+# デフォルトシェル変更
 ZSH_PATH=$(which zsh)
 if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
     echo "🔄 デフォルトシェルをzshに変更します..."
