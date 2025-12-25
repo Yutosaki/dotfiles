@@ -5,10 +5,10 @@
 run in your home directory
 
 ```
-git clone git@github.com:Yutosaki/dotfiles.git
+apt update && apt install curl -y
 ```
 ```
-./settings.sh
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Yutosaki
 ```
 
 # caution!
