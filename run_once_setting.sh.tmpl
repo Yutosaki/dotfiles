@@ -60,8 +60,8 @@ if ! command -v nvim &> /dev/null; then
 
     # アーキテクチャ判定 (x86_64 or aarch64)
     ARCH=$(uname -m)
-    NVIM_ASSET="nvim-linux64.tar.gz"
-    
+    NVIM_ASSET="nvim-linux-x86_64.tar.gz"
+
     if [ "$ARCH" = "aarch64" ]; then
         echo "   👉 Detected ARM64 architecture."
         NVIM_ASSET="nvim-linux-arm64.tar.gz"
