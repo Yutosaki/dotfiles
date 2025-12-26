@@ -158,6 +158,7 @@ fi
 
 # デフォルトシェルを Zsh に変更 (GitHub Actions対策で sudo を使用)
 ZSH_PATH=$(which zsh)
+CURRENT_USER=$(whoami)
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo "🐚 Changing default shell to zsh..."
     $SUDO_CMD chsh -s "$(which zsh)" "$CURRENT_USER"
