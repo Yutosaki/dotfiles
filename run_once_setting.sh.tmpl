@@ -56,9 +56,7 @@ fi
 
 # --- Neovim (アーキテクチャ自動判定) ---
 if ! command -v nvim &> /dev/null; then
-    echo "🌑 Installing Neovim $NVIM_VERSION ..."
-    
-    NVIM_VERSION="v0.10.4"
+    echo "🌑 Installing Neovim ..."
 
     # アーキテクチャ判定 (x86_64 or aarch64)
     ARCH=$(uname -m)
@@ -72,7 +70,7 @@ if ! command -v nvim &> /dev/null; then
     fi
 
     # URLを定義
-    URL="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_ASSET}"
+    URL="https://github.com/neovim/neovim/releases/download/stable/${NVIM_ASSET}"
     echo "⬇️ Downloading from: $URL"
 
     # -L: リダイレクトを追跡
