@@ -105,14 +105,17 @@ echo "🍎 macOS用のセットアップを実行中..."
 if ! command -v brew &> /dev/null; then
     echo "🍺 Homebrew not found. Skipping brew install."
 else
-    brew update
-    brew install lsd bat ripgrep tmux neovim node
+    echo "🍺 Updating Homebrew..."
+    brew update || true
+
+    echo "🍺 Installing packages..."
+    brew install lsd bat ripgrep tmux neovim node || true
 fi
     
 # "/Applications/Karabiner-Elements.app" というフォルダがない場合のみインストール
 if [ ! -d "/Applications/Karabiner-Elements.app" ]; then
     echo "⌨️ Installing Karabiner-Elements..."
-    brew install --cask karabiner-elements
+    brew install --cask karabiner-elements || ture
 else
     echo "✅ Karabiner-Elements is already installed."
 fi
