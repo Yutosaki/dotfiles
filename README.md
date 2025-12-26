@@ -1,27 +1,66 @@
-## my setting file
+# Dotfiles Setup
 
-# how to use
+Managed with [chezmoi](https://www.chezmoi.io/).
 
-run in your home directory (when you use apt)
+## 🚀 Quick Start
 
-```
+### 1. Install Dependencies
+**Linux (Debian/Ubuntu):**
+```bash
 apt update && apt install -y curl
 ```
 
-```
+2. Apply Dotfiles
+Run the following one-liner to initialize and apply the configuration:
+
+```bash
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Yutosaki
 ```
 
-# caution!
-if you can't use bat coz you got this messgage
+This is the complete content for your README.md. You can copy the code block below entirely and paste it into your file.
 
-` zsh: no such file or directory: /Users/sasakiyuto/dotfiles/bat/target/release/bat`
+## 🍎 macOS Users
 
-you have to run this command in `~/dotfiles/bat`
+### ⚠️ Karabiner-Elements Installation
+Automated installation of Karabiner-Elements is not supported due to password/security prompts. Please install it manually:
+
+```bash
+brew install --cask karabiner-elements
 ```
+After installation, open the app and follow the system prompts to allow input monitoring.
+
+## 🌐 Browser Extensions (Vimium)
+Auto-sync is not possible for browser extensions. You need to import settings manually.
+
+1. Locate the config file in your chezmoi source directory (e.g., `~/.local/share/chezmoi/vimium/vimium-options.json`).
+2. Open Vimium Options in your browser.
+3. Click **"Restore selected settings from a file"**.
+4. Upload the json file.
+
+## 🔧 Troubleshooting
+### `bat` error (Rust binary)
+If you encounter the following error:
+> `zsh: no such file or directory: .../bat/target/release/bat`
+
+It means the `bat` binary needs to be built from source. Run these commands inside the chezmoi source directory:
+
+```bash
+cd ~/.local/share/chezmoi/bat
 cargo build --release
 ```
-<br>
 
-# other
-if you want to use multipass, you should change file name `init.yaml.template` to `init.yaml` in multipass directory and paste your ssh key!
+## 📦 Optional Setup
+
+### Multipass
+If you want to use **Multipass**, you need to configure the initialization file:
+
+1. Go to the multipass directory in chezmoi source.
+2. Rename `init.yaml.template` to `init.yaml`.
+3. Open `init.yaml` and paste your **SSH Public Key**.
+
+```bash
+cd ~/.local/share/chezmoi/multipass
+mv init.yaml.template init.yaml
+# Then edit init.yaml
+```
+Then edit init.yaml
