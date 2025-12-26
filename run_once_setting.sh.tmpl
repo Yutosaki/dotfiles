@@ -112,13 +112,6 @@ else
     brew install lsd bat ripgrep tmux neovim node || true
 fi
     
-# "/Applications/Karabiner-Elements.app" というフォルダがない場合のみインストール
-if [ ! -d "/Applications/Karabiner-Elements.app" ]; then
-    echo "⌨️ Installing Karabiner-Elements..."
-    brew install --cask karabiner-elements || true
-else
-    echo "✅ Karabiner-Elements is already installed."
-fi
 {{ end -}}
 
 # -----------------------------------------------------------------------------
