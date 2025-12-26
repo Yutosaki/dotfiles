@@ -56,8 +56,10 @@ fi
 
 # --- Neovim (アーキテクチャ自動判定) ---
 if ! command -v nvim &> /dev/null; then
-    echo "🌑 Neovim をインストールします..."
+    echo "🌑 Installing Neovim $NVIM_VERSION ..."
     
+    NVIM_VERSION="v0.10.4"
+
     # アーキテクチャ判定 (x86_64 or aarch64)
     ARCH=$(uname -m)
     NVIM_ASSET="nvim-linux64.tar.gz"
