@@ -70,7 +70,7 @@ if ! command -v nvim &> /dev/null; then
     fi
 
     # URLを定義
-    URL="https://github.com/neovim/neovim/releases/latest/download/$NVIM_ASSET"
+    URL="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_ASSET}"
     echo "⬇️ Downloading from: $URL"
 
     # -L: リダイレクトを追跡
