@@ -153,11 +153,12 @@ if [ ! -d "$FZF_DIR" ]; then
     "$FZF_DIR/install" --all --no-bash --no-fish
 fi
 
-# デフォルトシェル変更
+# デフォルトシェルを Zsh に変更 (GitHub Actions対策で sudo を使用)
 ZSH_PATH=$(which zsh)
-if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
-    echo "🔄 デフォルトシェルをzshに変更します..."
-    chsh -s "$ZSH_PATH"
+if [ "$SHELL" != "$(which zsh)" ]; then
+    echo "🐚 Changing default shell to zsh..."
+    sudo chsh -s "$(which zsh)" "$(whoami)"
 fi
 
+echo "✨ Setup Complete!"
 echo "✨ セットアップ完了！"
