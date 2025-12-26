@@ -1,0 +1,15 @@
+" Unmap existing keys
+unmap q
+unmap /
+
+" Map Ctrl+j to move to the previous tab
+map <c-j> previousTab
+
+" Map Ctrl+k to move to the next tab
+map <c-k> nextTab
+
+" Map Ctrl+h to go back in history
+map <c-h> goBack
+
+" Map Ctrl+l to go forward in history
+map <c-l> goForward
