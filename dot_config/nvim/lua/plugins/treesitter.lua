@@ -2,6 +2,10 @@
 return {
   "nvim-treesitter/nvim-treesitter",
   opts = {
+    auto_install = true,
+    highlight = {
+      enable = true,
+    },
     ensure_installed = {
       "c",
       "cpp",
@@ -12,6 +16,7 @@ return {
       "vim",
 
       "dockerfile",
+      "yaml",
       "toml",
       "gitignore",
       "json",
