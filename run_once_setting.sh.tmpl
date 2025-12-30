@@ -26,7 +26,7 @@ export DEBIAN_FRONTEND=noninteractive
 $SUDO_CMD apt-get update
 $SUDO_CMD apt-get install -y \
     build-essential unzip valgrind git curl zsh tmux tzdata locales \
-    ripgrep bat lsd nodejs npm
+    ripgrep bat nodejs npm
 
 # ロケール生成 (LC_ALLエラー対策)
 if ! command -v locale-gen &> /dev/null; then
