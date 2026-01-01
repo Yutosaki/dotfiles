@@ -69,4 +69,10 @@ return {
       },
     },
   },
+  config = function(_, opts)
+    require("astrocore").setup(opts)
+
+    -- ここで色を強制指定（シアン背景、黒文字、太字）
+    vim.api.nvim_set_hl(0, "Search", { bg = "#00ffff", fg = "#000000", bold = true })
+  end,
 }
