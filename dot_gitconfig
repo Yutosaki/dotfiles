@@ -5,10 +5,11 @@
 	co = checkout
 	br = branch
  	st = status
-    sw = switch
-    cp = cherry-pick
-    cm = commit
-    ad = add
+  sw = switch
+  cp = cherry-pick
+  cm = commit
+  ad = add
+  l = log --graph --all --decorate --oneline
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
