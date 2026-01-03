@@ -1,29 +1,35 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
--- AstroUI provides the basis for configuring the AstroNvim User Interface
--- Configuration documentation can be found with `:h astroui`
--- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
---       as this provides autocomplete and documentation while editing
-
----@type LazySpec
 return {
   "AstroNvim/astroui",
   ---@type AstroUIOpts
   opts = {
-    -- change colorscheme
-    colorscheme = "astrodark",
-    -- AstroUI allows you to easily modify highlight groups easily for any and all colorschemes
+    colorscheme = "poimandres",
+
     highlights = {
-      init = { -- this table overrides highlights in all themes
-        -- Normal = { bg = "#000000" },
+      -- 【init】: 全テーマ共通の設定
+      init = {
+        -- bg: カーソルの色 (Poimandresのシアン #5DE4C7)
+        -- fg: 下の文字の色 (これを暗い色 #1b1e28 に固定すると読める)
+        Cursor = { bg = "#5DE4C7", fg = "#1b1e28" },
+        -- 念のため入力モード(iCursor)なども統一しておくと綺麗です
+        iCursor = { bg = "#5DE4C7", fg = "#1b1e28" },
+
+        -- ■ 検索ハイライト（青系で統一）
+        -- Search: 他のマッチ箇所（少し濃いめの青背景＋白文字）
+        Search = { bg = "#3D59A1", fg = "#ffffff", bold = true },
+        -- CurSearch: 現在カーソルがある箇所（明るい水色背景＋黒文字で強調）
+        CurSearch = { bg = "#89ddff", fg = "#1b1e28", bold = true },
+        -- IncSearch: 入力中の文字（CurSearchと同じにするのが一般的）
+        IncSearch = { bg = "#89ddff", fg = "#1b1e28", bold = true },
       },
-      astrodark = { -- a table of overrides/changes when applying the astrotheme theme
-        -- Normal = { bg = "#000000" },
+
+      -- 【poimandres】: Poimandres 専用設定
+      poimandres = {
+        Comment = { fg = "#767C9D", italic = true },
+        CursorLineNr = { fg = "#5DE4C7", bold = true },
       },
     },
-    -- Icons can be configured throughout the interface
+
     icons = {
-      -- configure the loading of the lsp in the status line
       LSPLoading1 = "⠋",
       LSPLoading2 = "⠙",
       LSPLoading3 = "⠹",
