@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Caps Lockキーをctrlキーに変更
+setxkbmap -option ctrl:nocaps
