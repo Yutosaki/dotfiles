@@ -1,6 +1,6 @@
 -- This file simply bootstraps the installation of Lazy.nvim and then calls other files for execution
 -- This file doesn't necessarily need to be touched, BE CAUTIOUS editing this file and proceed at your own risk.
-local lazypath = vim.env.LAZY or vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+local lazypath = vim.env.LAZY or vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not (vim.env.LAZY or (vim.uv or vim.loop).fs_stat(lazypath)) then
   -- stylua: ignore
@@ -18,16 +18,16 @@ if not pcall(require, "lazy") then
   vim.api.nvim_echo(
     { { ("Unable to load lazy from: %s\n"):format(lazypath), "ErrorMsg" }, { "Press any key to exit...", "MoreMsg" } },
     true, {})
-  vim.fn.getchar()
-  vim.cmd.quit()
+	vim.fn.getchar()
+	vim.cmd.quit()
 end
 
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-  pattern = "*",
-  callback = function()
-    vim.opt.display = "lastline"
-    vim.opt.scrolloff = 0
-  end
+	pattern = "*",
+	callback = function()
+		vim.opt.display = "lastline"
+		vim.opt.scrolloff = 0
+	end,
 })
 
 -- -------------------------------------------------------------------------
@@ -35,32 +35,32 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 -- Docker / SSH 環境でもホストOSのクリップボードと同期します
 -- -------------------------------------------------------------------------
 if vim.ui.clipboard and vim.ui.clipboard.osc52 then
-  -- Neovim 0.10+ の標準機能を使用
-  local function copy(lines, _)
-    require('vim.ui.clipboard.osc52').copy('+')(lines)
-  end
+	-- Neovim 0.10+ の標準機能を使用
+	local function copy(lines, _)
+		require("vim.ui.clipboard.osc52").copy("+")(lines)
+	end
 
-  local function paste()
-    return require('vim.ui.clipboard.osc52').paste('+')()
-  end
+	local function paste()
+		return require("vim.ui.clipboard.osc52").paste("+")()
+	end
 
-  vim.g.clipboard = {
-    name = 'osc52',
-    copy = {
-      ['+'] = copy,
-      ['*'] = copy,
-    },
-    paste = {
-      ['+'] = paste,
-      ['*'] = paste,
-    },
-  }
-  -- 常にシステムクリップボードを使う設定
-  vim.opt.clipboard = "unnamedplus"
+	vim.g.clipboard = {
+		name = "osc52",
+		copy = {
+			["+"] = copy,
+			["*"] = copy,
+		},
+		paste = {
+			["+"] = paste,
+			["*"] = paste,
+		},
+	}
+	-- 常にシステムクリップボードを使う設定
+	vim.opt.clipboard = "unnamedplus"
 end
 
 -- -------------------------------------------------------------------------
 -- 設定読み込み (ここがファイルの最後に来るようにする)
 -- -------------------------------------------------------------------------
-require "lazy_setup"
-require "polish"
+require("lazy_setup")
+require("polish")
