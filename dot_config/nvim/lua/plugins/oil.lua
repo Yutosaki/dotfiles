@@ -6,7 +6,7 @@ return {
 	config = function()
 		require("oil").setup({
 			-- ここに詳細な設定を書けます
-			view_optionw = {
+			view_options = {
 				show_hidden = true, -- 隠しファイルを表示
 			},
 		})
