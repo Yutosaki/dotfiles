@@ -1,7 +1,26 @@
 {{- if eq .chezmoi.os "linux" -}}
-#!/bin/sh
+#!/bin/bash
 
-# GNOMEの設定を変更してCaps LockをCtrlにする
+# 1. CI環境 (GitHub Actionsなど) なら何もしないで正常終了 (exit 0)
+if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
+    echo "Running in CI environment. Skipping GNOME settings."
+    exit 0
+fi
+
+# 2. gsettings コマンド自体がない場合もスキップ
+if ! command -v gsettings &> /dev/null; then
+    echo "gsettings command not found. Skipping."
+    exit 0
+fi
+
+# 3. エラーの原因だった「スキーマ」が存在するか確認
+# 存在しない場合 (Headlessサーバーなど) はスキップ
+if ! gsettings list-schemas | grep -q "org.gnome.desktop.input-sources"; then
+    echo "GNOME desktop schema not found. Skipping."
+    exit 0
+fi
+
+# ここまで来て初めて実行する
 gsettings set org.gnome.desktop.input-sources xkb-options "['ctrl:nocaps']"
 
 {{- end -}}
