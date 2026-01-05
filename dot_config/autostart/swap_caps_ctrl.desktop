@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Swap Caps and Ctrl
-Exec=/usr/bin/setxkbmap -option ctrl:nocaps
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true

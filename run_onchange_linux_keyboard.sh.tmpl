@@ -1,0 +1,7 @@
+{{- if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+
+# GNOMEの設定を変更してCaps LockをCtrlにする
+gsettings set org.gnome.desktop.input-sources xkb-options "['ctrl:nocaps']"
+
+{{- end -}}
