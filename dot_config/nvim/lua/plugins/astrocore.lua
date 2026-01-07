@@ -36,9 +36,4 @@ return {
 
 		return opts
 	end,
-
-	config = function(_, opts)
-		require("astrocore").setup(opts)
-		vim.api.nvim_set_hl(0, "Search", { bg = "#00ffff", fg = "#000000", bold = true })
-	end,
 }
