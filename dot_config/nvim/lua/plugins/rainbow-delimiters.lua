@@ -5,12 +5,12 @@ return {
 	config = function()
 		local rainbow_delimiters = require("rainbow-delimiters")
 
-		vim.api.nvim_set_hl(0, "WinterBlue", { fg = "#88C0D0" })
-		vim.api.nvim_set_hl(0, "WinterTeal", { fg = "#8FBCBB" })
-		vim.api.nvim_set_hl(0, "WinterPurple", { fg = "#B48EAD" })
-		vim.api.nvim_set_hl(0, "WinterCyan", { fg = "#81A1C1" })
-		vim.api.nvim_set_hl(0, "WinterNavy", { fg = "#5E81AC" })
-		vim.api.nvim_set_hl(0, "WinterMint", { fg = "#A3BE8C" })
+		vim.api.nvim_set_hl(0, "WinterBlue", { fg = "#93B8D9" })
+		vim.api.nvim_set_hl(0, "WinterTeal", { fg = "#7AB0B0" })
+		vim.api.nvim_set_hl(0, "WinterPurple", { fg = "#8880B0" })
+		vim.api.nvim_set_hl(0, "WinterCyan", { fg = "#608590" })
+		vim.api.nvim_set_hl(0, "WinterNavy", { fg = "#586985" })
+		vim.api.nvim_set_hl(0, "WinterMint", { fg = "#557060" })
 
 		require("rainbow-delimiters.setup").setup({
 			strategy = {
