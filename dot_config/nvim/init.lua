@@ -12,6 +12,10 @@ vim.opt.rtp:prepend(lazypath)
 vim.opt.display:append("lastline")
 vim.g.neovide_font_name = "Hack Nerd Font Mono"
 
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+
 -- validate that lazy is available
 if not pcall(require, "lazy") then
 	-- stylua: ignore
