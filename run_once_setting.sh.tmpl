@@ -115,7 +115,7 @@ fi
 {{ end -}}
 
 # -----------------------------------------------------------------------------
-# 3. 共通処理: Rust & Zshプラグイン
+# 3. 共通処理: Rust & Zsh/Tmux プラグイン
 # -----------------------------------------------------------------------------
 if ! command -v cargo &> /dev/null; then
     echo "🦀 Rustをインストール中..."
@@ -142,6 +142,10 @@ clone_if_not_exists() {
 clone_if_not_exists "https://github.com/zsh-users/zsh-syntax-highlighting.git" "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
 clone_if_not_exists "https://github.com/zsh-users/zsh-autosuggestions" "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 clone_if_not_exists "https://github.com/Aloxaf/fzf-tab" "$ZSH_PLUGIN_DIR/fzf-tab"
+
+# --- Tmux プラグインマネージャー (tpm) ---
+TMUX_TPM_DIR="$HOME/.tmux/plugins/tpm"
+clone_if_not_exists "https://github.com/tmux-plugins/tpm" "$TMUX_TPM_DIR"
 
 FZF_DIR="$HOME/.fzf"
 if [ ! -d "$FZF_DIR" ]; then
