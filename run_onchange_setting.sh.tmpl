@@ -54,47 +54,53 @@ if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# --- Neovim (アーキテクチャ自動判定) ---
-if ! command -v nvim &> /dev/null; then
-    echo "🌑 Installing Neovim ..."
+# --- Neovim (指定インストール) ---
+NVIM_VERSION="v0.11.6"
 
-    # アーキテクチャ判定 (x86_64 or aarch64)
+# インストール済みか、かつ指定バージョンと同じかチェック
+if ! command -v nvim &> /dev/null || ! nvim --version | grep -q "$NVIM_VERSION"; then
+    echo "🌑 Installing Neovim $NVIM_VERSION ..."
+
     ARCH=$(uname -m)
-    NVIM_ASSET="nvim-linux-x86_64.tar.gz"
-
-    if [ "$ARCH" = "aarch64" ]; then
-        echo "   👉 Detected ARM64 architecture."
+    # GitHubのリリースアセット名に合わせる
+    if [ "$ARCH" = "x86_64" ]; then
+        NVIM_ASSET="nvim-linux-x86_64.tar.gz"
+        NVIM_DIR_NAME="nvim-linux-x86_64"
+    elif [ "$ARCH" = "aarch64" ]; then
         NVIM_ASSET="nvim-linux-arm64.tar.gz"
+        NVIM_DIR_NAME="nvim-linux-arm64"
     else
-        echo "   👉 Detected x86_64 architecture."
-    fi
-
-    # URLを定義
-    URL="https://github.com/neovim/neovim/releases/download/stable/${NVIM_ASSET}"
-    echo "⬇️ Downloading from: $URL"
-
-    # -L: リダイレクトを追跡
-    # -f: サーバーエラー(404等)ならファイルを保存せずに失敗させる
-    # -O: サーバー上のファイル名で保存
-    curl -L -f -O "$URL"
-    
-    # ダウンロード失敗チェック
-    if [ $? -ne 0 ]; then
-        echo "❌ Download failed! URL or Network issue."
+        echo "❌ Unsupported architecture: $ARCH"
         exit 1
     fi
 
-    $SUDO_CMD rm -rf /opt/nvim
-    # 解凍 (tarのエラー防止のためにオプション調整)
-    $SUDO_CMD tar -C /opt -xzf "$NVIM_ASSET"
+    URL="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_ASSET}"
+    echo "⬇️ Downloading from: $URL"
+
+    # 一時ディレクトリで作業
+    TEMP_DIR=$(mktemp -d)
+    cd "$TEMP_DIR"
+
+    if curl -L -f -O "$URL"; then
+        # 既存の古いバイナリディレクトリを削除してクリーンアップ
+        $SUDO_CMD rm -rf "/opt/$NVIM_DIR_NAME"
+        
+        # 解凍して配置
+        $SUDO_CMD tar -C /opt -xzf "$NVIM_ASSET"
+        
+        # シンボリックリンクの作成（絶対パスで指定して確実に）
+        $SUDO_CMD ln -sf "/opt/$NVIM_DIR_NAME/bin/nvim" /usr/local/bin/nvim
+        
+        echo "✅ Neovim $NVIM_VERSION installed successfully."
+    else
+        echo "❌ Download failed! Check if version $NVIM_VERSION exists at GitHub."
+    fi
     
-    # フォルダ名がアーキテクチャによって異なるためワイルドカードでリンク
-    $SUDO_CMD ln -sf /opt/nvim-linux*/bin/nvim /usr/local/bin/nvim
-    
-    rm "$NVIM_ASSET"
-    echo "✅ Neovim installed."
+    # 作業ディレクトリの削除
+    cd - > /dev/null
+    rm -rf "$TEMP_DIR"
 else
-    echo "✅ Neovim is already installed."
+    echo "✅ Neovim is already up-to-date ($(nvim --version | head -n 1))."
 fi
 
 {{ else if eq .chezmoi.os "darwin" -}}
