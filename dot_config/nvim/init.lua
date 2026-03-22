@@ -15,6 +15,8 @@ vim.g.neovide_font_name = "Hack Nerd Font Mono"
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
+vim.opt.cinoptions = "g0,:0,(0"
+vim.opt.cindent = true
 
 -- validate that lazy is available
 if not pcall(require, "lazy") then
