@@ -10,12 +10,27 @@ Managed with [chezmoi](https://www.chezmoi.io/).
 apt update && apt install -y curl
 ```
 
-2. Apply Dotfiles
+### 2. Apply Dotfiles
 Run the following one-liner to initialize and apply the configuration:
 
 ```bash
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Yutosaki
 ```
+
+### 3. GitHub CLI Authentication
+Required for Neovim Pull Request review features.
+
+Run the following command:
+```bash
+gh auth login
+```
+
+Follow these steps:
+1. What account do you want to log into? -> Select 'GitHub.com'
+2. What is your preferred protocol for Git operations? -> Select 'HTTPS'
+3. Authenticate Git with your GitHub credentials? -> Select 'Yes'
+4. How would you like to authenticate GitHub CLI? -> Select 'Login with a web browser'
+5. Copy the one-time code, press Enter, and complete the authentication in your browser.```
 
 This is the complete content for your README.md. You can copy the code block below entirely and paste it into your file.
 
