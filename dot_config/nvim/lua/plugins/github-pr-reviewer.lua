@@ -4,48 +4,38 @@ return {
 	lazy = false,
 	priority = 1000,
 	config = function()
-		-- 🛠 1. Neovim 本体の差分表示設定（行をピッタリ揃える）
+		-- 1. 全体設定：コメント表示の高速化と差分設定
+		vim.o.updatetime = 200
 		vim.opt.diffopt:append("filler")
 		vim.opt.diffopt:append("internal")
-		vim.opt.diffopt:append("indent-heuristic")
 
 		local pr = require("github-pr-reviewer")
 
 		pr.setup({
-			-- 🚀 README最新仕様：トップレベルに設定を配置
-			vertical_split = true, -- 最初から左右分割にする
-			open_files_on_review = true, -- レビュー開始時にファイルを開く
-			show_floats = true, -- 右上のヘルプを表示
+			vertical_split = true,
+			open_files_on_review = true,
+			show_floats = true,
+			show_comments = true,
 
-			-- ⌨️ キー設定（README準拠）
-			diff_view_toggle_key = "\\", -- これで \ が左右分割の切り替えになる
+			-- ⌨️ キー設定：プレフィックスを Ctrl + p 系統に統一
+			-- ※ AstroNvim標準の Telescope (Ctrl+p) と衝突する場合は注意してください
+			diff_view_toggle_key = "\\",
 			mark_as_viewed_key = "<CR>",
 			toggle_floats_key = "<C-r>",
-			next_hunk_key = "]h",
-			prev_hunk_key = "[h",
-			next_file_key = "]f",
-			prev_file_key = "[f",
+			next_hunk_key = "<C-p>j", -- 次の差分
+			prev_hunk_key = "<C-p>k", -- 前の差分
+			next_file_key = "<C-p>l", -- 次のファイル
+			prev_file_key = "<C-p>h", -- 前のファイル
 		})
 
-		-- 🛠 2. キーバインドの整理（競合を完全に排除）
+		-- 2. キーバインド（リーダーキー系統）
 		local key_opts = { silent = true, noremap = true }
-
-		-- メインメニュー（これが一番大事！）
-		vim.keymap.set("n", "<leader>pp", "<cmd>PRReviewMenu<cr>", { desc = "PR Review Menu", unpack(key_opts) })
-
-		-- レビュー・ワークフロー
-		vim.keymap.set("n", "<leader>pr", "<cmd>PRReview<cr>", { desc = "レビュー開始", unpack(key_opts) })
-		vim.keymap.set("n", "<leader>pc", "<cmd>PRReviewCleanup<cr>", { desc = "レビュー終了", unpack(key_opts) })
-		vim.keymap.set("n", "<leader>pi", "<cmd>PRInfo<cr>", { desc = "PR情報を表示", unpack(key_opts) })
-		vim.keymap.set("n", "<leader>po", "<cmd>PROpen<cr>", { desc = "ブラウザで開く", unpack(key_opts) })
-
-		-- 💬 コメント関連
-		-- pa をコメント追加（保留モード）に割り当て
+		vim.keymap.set("n", "<leader>pp", "<cmd>PRReviewMenu<cr>", { desc = "PRメニュー", unpack(key_opts) })
 		vim.keymap.set(
 			"n",
 			"<leader>pa",
 			"<cmd>PRPendingComment<cr>",
-			{ desc = "コメント追加(保留)", unpack(key_opts) }
+			{ desc = "コメント追加", unpack(key_opts) }
 		)
 		vim.keymap.set(
 			"n",
@@ -53,45 +43,48 @@ return {
 			"<cmd>PRListAllComments<cr>",
 			{ desc = "全コメント表示", unpack(key_opts) }
 		)
-		vim.keymap.set("n", "<leader>pe", "<cmd>PREditComment<cr>", { desc = "コメント編集", unpack(key_opts) })
+		vim.keymap.set("n", "<leader>pc", "<cmd>PRReviewCleanup<cr>", { desc = "レビュー終了", unpack(key_opts) })
 
-		-- 🚀 送信アクション
-		vim.keymap.set("n", "<leader>ps", "<cmd>PRApprove<cr>", { desc = "承認して送信", unpack(key_opts) })
-		vim.keymap.set(
-			"n",
-			"<leader>px",
-			"<cmd>PRRequestChanges<cr>",
-			{ desc = "修正要求して送信", unpack(key_opts) }
-		)
-
-		-- 🛠 3. \ キーが他の設定に奪われるのを防ぐ
+		-- 3. 🛠 コメントバッファの `:w` エラー対策ハック
 		vim.api.nvim_create_autocmd("FileType", {
-			pattern = "ghpr",
-			callback = function()
-				vim.keymap.set("n", "\\", function()
-					pr.toggle_split()
-				end, { buffer = true, desc = "左右分割切り替え" })
+			pattern = "ghpr_comment",
+			callback = function(args)
+				-- 保存コマンド（:w）をフックして、プラグインの保存処理（<C-s>）をエミュレートする
+				-- buftype=nofile でもエラーを出さずに保存できるようにします
+				vim.api.nvim_buf_create_user_command(args.buf, "W", function()
+					vim.api.nvim_input("<C-s>")
+				end, { desc = "Save PR Comment" })
+
+				-- :w を入力した時にエラーを出さず保存処理を実行
+				vim.keymap.set("n", ":w<CR>", "<C-s>", { buffer = args.buf, remap = true, silent = true })
+				-- :q でそのまま閉じれるように
+				vim.keymap.set("n", ":q<CR>", "<cmd>q<CR>", { buffer = args.buf, silent = true })
 			end,
 		})
 
-		-- 🎨 4. 配色の調整（追加行を緑系に、他は青系に）
+		-- 4. 🎨 配色の調整：青系統 ＋ M(Modified)への着色
 		local function set_ui_colors()
 			local hl = vim.api.nvim_set_hl
 
-			-- 🟦 差分画面：背景グレーを消す
+			-- 🟦 共通：背景グレー除去
 			hl(0, "DiffChange", { bg = "NONE", fg = "NONE" })
 			hl(0, "DiffText", { bg = "#1e3a5f", fg = "#00f2ff", bold = true })
 
-			-- 🟢 追加行：リクエスト通り「緑」にします
+			-- 🟢 追加行：緑
 			hl(0, "DiffAdd", { bg = "#1a3a1e", fg = "#a6e22e", force = true })
-
-			-- 🔴 削除行：青系テーマに合う落ち着いた赤マゼンタ
+			-- 🔴 削除行：赤
 			hl(0, "DiffDelete", { bg = "#3a1a2a", fg = "#f7768e", force = true })
 
-			-- 🟦 ファイルリスト等のUI
+			-- 🟦 ファイルリストUI
 			hl(0, "GHPRFileSelected", { fg = "#000000", bg = "#00f2ff", bold = true, force = true })
 			hl(0, "GHPRFileNotViewed", { fg = "#73daca", bold = true, force = true })
 			hl(0, "GHPRFileViewed", { fg = "#565f89", force = true })
+
+			-- 🟪 M (Modified) ファイルへの着色（プラグインが使用する可能性のある全グループに適用）
+			local m_color = { fg = "#bb9af7", bold = true, force = true }
+			hl(0, "GHPRFileModified", m_color)
+			hl(0, "GHPRStatusM", m_color) -- 文字 'M' 自体の色指定があれば反映
+
 			hl(0, "DiffFiller", { fg = "#3b4261", bg = "NONE", force = true })
 		end
 
