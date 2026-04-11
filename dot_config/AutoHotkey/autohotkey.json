@@ -1,0 +1,66 @@
+#Requires AutoHotkey v2.0
+#SingleInstance Force
+
+; --- 状態管理変数 ---
+global isSelectMode := 0  ; 0:通常, 1:文字選択, 2:行選択
+
+; --- ターミナルの除外設定 ---
+GroupAdd "Terminals", "ahk_exe WindowsTerminal.exe"
+
+; --- ターミナル以外で有効な設定 ---
+#HotIf !WinActive("ahk_group Terminals")
+
+    ; --- 貼り付け設定 ---
+    ^p::Send("^v") ; Ctrl + p でペースト
+
+    ; --- 全選択の設定 ---
+    ^+a::Send("^a") ; Ctrl + Shift + a で全選択
+
+    ; --- モード切替 ---
+    ^v:: {
+        global isSelectMode := 1
+        ToolTip "Visual Mode (Char)"
+    }
+
+    ^+v:: {
+        global isSelectMode := 2
+        Send("{Home}+{End}")
+        ToolTip "Visual Mode (Line)"
+    }
+
+    ; --- 選択モード中（isSelectMode > 0）のみ有効なキー ---
+    #HotIf !WinActive("ahk_group Terminals") and isSelectMode > 0
+    
+    ; yでコピーして終了
+    y:: {
+        global isSelectMode := 0
+        Send("^c")
+        Send("{Right}")
+        ToolTip
+    }
+
+    ; q または Esc で選択モード解除（コピーしない）
+    q::
+    Esc:: {
+        global isSelectMode := 0
+        Send("{Right}") ; 選択を解除してカーソルを右へ
+        ToolTip
+    }
+    #HotIf
+
+    ; --- 移動・編集操作 (モードに応じて挙動変化) ---
+    #HotIf !WinActive("ahk_group Terminals")
+    ^h:: Send(isSelectMode ? "+{Left}" : "{Left}")
+    ^j:: Send(isSelectMode ? "+{Down}" : "{Down}")
+    ^k:: Send(isSelectMode ? "+{Up}" : "{Up}")
+    ^l:: Send(isSelectMode ? "+{Right}" : "{Right}")
+    
+    ^a:: Send(isSelectMode ? "+{Home}" : "{Home}")
+    ^e:: Send(isSelectMode ? "+{End}" : "{End}")
+
+    ^d:: Send("{Home}+{End}{Delete}")
+    ^u:: Send("^z")
+#HotIf
+
+; 緊急リロード
+^!r:: Reload()
