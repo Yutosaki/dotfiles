@@ -43,7 +43,19 @@ return {
 			"<cmd>PRListAllComments<cr>",
 			{ desc = "全コメント表示", unpack(key_opts) }
 		)
-		vim.keymap.set("n", "<leader>pc", "<cmd>PRReviewCleanup<cr>", { desc = "レビュー終了", unpack(key_opts) })
+		vim.keymap.set('n', '<leader>pe', '<cmd>PREditComment<cr>', { desc = 'Edit PR Comment' })
+		-- 2.1. 承認して終了 (Pendingコメントも送信)
+		vim.keymap.set("n", "<leader>pok", "<cmd>PRApprove<cr>", { desc = "PR承認して送信", unpack(key_opts) })
+
+		-- 2.2. 変更をリクエストして終了 (Pendingコメントも送信)
+		vim.keymap.set("n", "<leader>png", "<cmd>PRRequestChanges<cr>", { desc = "変更リクエストして送信", unpack(key_opts) })
+
+		-- 2.3. コメントのみ送信 (承認や却下をせず、審査コメントのみを送る)
+		vim.keymap.set("n", "<leader>pm", "<cmd>PRComment<cr>", { desc = "一般コメントを送信", unpack(key_opts) })
+
+		-- 2.4. レビュー終了 (送信後の後片付け・ブランチ復帰)
+		vim.keymap.set("n", "<leader>pc", "<cmd>PRReviewCleanup<cr>", { desc = "レビュー終了(後片付け)", unpack(key_opts) })
+
 
 		-- 3. 🛠 コメントバッファの `:w` エラー対策ハック
 		vim.api.nvim_create_autocmd("FileType", {
