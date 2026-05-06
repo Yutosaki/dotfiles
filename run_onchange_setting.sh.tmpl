@@ -66,6 +66,9 @@ if [ ! -f "$MISE_BIN" ]; then
     curl https://mise.jdx.dev/install.sh | sh
 fi
 
+# mise install を実行する前に、mise本体のディレクトリを PATH に追加する
+export PATH="$HOME/.local/bin:$PATH"
+
 echo "🛠️ mise install を実行中..."
 # インストール実行
 $MISE_BIN install -y
