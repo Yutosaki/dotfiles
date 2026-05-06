@@ -75,7 +75,6 @@ fi
 export PATH="$HOME/.local/bin:$PATH"
 
 # 2. mise を有効化 (eval の実行)
-# これにより、mise.toml に書いたツールのパスが自動で最優先さレル
 if command -v mise &> /dev/null; then
   eval "$(mise activate zsh)"
 fi
