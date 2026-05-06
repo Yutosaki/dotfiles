@@ -58,7 +58,6 @@ brew install git zsh tmux llvm cmake ninja
 # -----------------------------------------------------------------------------
 # 2. mise によるツール一括インストール (Neovim, Rust, Node, etc.)
 # -----------------------------------------------------------------------------
-# --- 修正後の run_on_change スクリプト ---
 MISE_BIN="$HOME/.local/bin/mise"
 
 if [ ! -f "$MISE_BIN" ]; then
@@ -68,6 +67,7 @@ fi
 
 # mise install を実行する前に、mise本体のディレクトリを PATH に追加する
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 
 echo "🛠️ mise install を実行中..."
 # インストール実行
