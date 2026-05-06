@@ -66,11 +66,8 @@ if [ ! -f "$MISE_BIN" ]; then
 fi
 
 # どんなサブプロセス（npm等）からも絶対に見えるように、システムパスにリンクを張る
-if ! command -v mise &> /dev/null; then
-    if [ -d "/usr/local/bin" ]; then
-        $SUDO_CMD ln -sf "$MISE_BIN" /usr/local/bin/mise
-    fi
-fi
+$SUDO_CMD ln -sf "$MISE_BIN" /usr/local/bin/mise 2>/dev/null || true
+$SUDO_CMD ln -sf "$MISE_BIN" /usr/bin/mise 2>/dev/null || true
 
 # 基本のPATHエクスポート（手動用）
 export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
