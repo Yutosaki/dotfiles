@@ -12,7 +12,7 @@ return {
 		-- Configuration table of features provided by AstroLSP
 		features = {
 			codelens = true, -- enable/disable codelens refresh on start
-			inlay_hints = false, -- enable/disable inlay hints on start
+			inlay_hints = true, -- enable/disable inlay hints on start
 			semantic_tokens = true, -- enable/disable semantic token highlighting
 		},
 		-- customize lsp formatting options
@@ -29,7 +29,8 @@ return {
 			},
 			disabled = { -- disable formatting capabilities for the listed language servers
 				-- disable lua_ls formatting capability if you want to use StyLua to format your lua code
-				-- "lua_ls",
+				"lua_ls",
+				"vtsls",
 			},
 			timeout_ms = 1000, -- default format timeout
 			-- filter = function(client) -- fully override the default formatting function
@@ -38,6 +39,10 @@ return {
 		},
 		-- enable servers that you already have installed without mason
 		servers = {
+			"lua_ls",
+			"clangd",
+			"vtsls",
+			"taplo",
 			-- "pyright"
 		},
 		-- customize language server configuration options passed to `lspconfig`
@@ -61,6 +66,18 @@ return {
 						"-I./include",
 					},
 				},
+			},
+			-- taplo 用の設定を追加
+			taplo = {
+				-- 【追記】Taploを言語サーバーとして確実に起動するためのコマンドを明示
+				cmd = { "taplo", "lsp", "stdio" },
+				-- ルートディレクトリ（.git等）がなくても、単一ファイルで起動するようにする
+				single_file_support = true,
+				-- プロジェクトルートの検出ルールを明示（chezmoi環境でも安定させます）
+				root_dir = function(fname)
+					local util = require("lspconfig.util")
+					return util.root_pattern("Cargo.toml", ".git", "mise.toml", "config.toml")(fname) or vim.fn.getcwd()
+				end,
 			},
 		},
 		-- customize how language servers are attached
