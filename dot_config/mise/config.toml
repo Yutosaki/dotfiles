@@ -1,0 +1,31 @@
+[tools]
+# --- Core CLI Tools ---
+neovim = "0.11.6"
+ripgrep = "latest"
+lsd = "latest"
+bat = "latest"
+fzf = "latest"
+gh = "latest"
+
+# --- Runtimes ---
+node = "22"
+rust = "1.85"
+
+# --- LSPs & Formatters (npm系) ---
+"npm:@vtsls/language-server" = "latest"
+"npm:@fsouza/prettierd" = "latest"
+"npm:bash-language-server" = "latest"
+
+# --- LSPs & Formatters (cargo系) ---
+"cargo:stylua" = "latest"
+
+# --- Standalone Binaries ---
+lua-language-server = "latest"
+taplo = "latest"
+
+# --- Others ---
+"npm:@marp-team/marp-cli" = "latest"
+
+[settings]
+legacy_version_file = true
+trusted_config_paths = ["~/.local/share/chezmoi", "~/.config/mise"]
