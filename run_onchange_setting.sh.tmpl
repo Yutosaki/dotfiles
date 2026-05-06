@@ -65,20 +65,29 @@ if [ ! -f "$MISE_BIN" ]; then
     curl https://mise.jdx.dev/install.sh | sh
 fi
 
-# mise install を実行する前に、mise本体のディレクトリを PATH に追加する
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/share/mise/shims:$PATH"
+# どんなサブプロセス（npm等）からも絶対に見えるように、システムパスにリンクを張る
+if ! command -v mise &> /dev/null; then
+    if [ -d "/usr/local/bin" ]; then
+        $SUDO_CMD ln -sf "$MISE_BIN" /usr/local/bin/mise
+    fi
+fi
+
+# 基本のPATHエクスポート（手動用）
+export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+
+# 現在のスクリプトセッションに mise の機能を完全にフックさせる
+{{ if eq .chezmoi.os "linux" -}}
+eval "$($MISE_BIN activate bash)"
+{{ else -}}
+eval "$($MISE_BIN activate zsh)"
+{{ end -}}
 
 echo "🛠️ mise install を実行中..."
-# インストール実行
-$MISE_BIN install -y
+# インストール実行（パスもフックも完了しているので npm も迷子になりません）
+mise install -y
 
-# 【重要】現在のシェルセッションで shims (miseで入れたツールのパス) を有効化
-# これにより、この後の工程や、直後に起動する Neovim がツールを見つけられるようになります
-export PATH="$HOME/.local/share/mise/shims:$PATH"
-
-# 必要に応じて reshim (パスの再構成) を実行
-$MISE_BIN reshim
+# パスの再構成
+mise reshim
 
 # -----------------------------------------------------------------------------
 # 3. Zsh/Tmux プラグイン
