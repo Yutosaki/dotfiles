@@ -16,7 +16,7 @@ fi
 echo "🚀 セットアップを開始します..."
 
 # -----------------------------------------------------------------------------
-# 1. Linux用セットアップ (ロケール・ツール・Neovim)
+# 1. OS固有の基盤パッケージインストール
 # -----------------------------------------------------------------------------
 {{ if eq .chezmoi.os "linux" -}}
 echo "🐧 Linux用のセットアップを実行中..."
@@ -25,10 +25,9 @@ export DEBIAN_FRONTEND=noninteractive
 # 必須ツールインストール
 $SUDO_CMD apt-get update
 $SUDO_CMD apt-get install -y \
-    build-essential unzip valgrind git curl zsh tmux tzdata locales \
-    ripgrep bat nodejs npm gh
+    build-essential unzip valgrind git curl zsh tmux tzdata locales
 
-# ロケール生成 (LC_ALLエラー対策)
+# ロケール生成
 if ! command -v locale-gen &> /dev/null; then
     $SUDO_CMD apt-get update
     $SUDO_CMD apt-get install -y locales
@@ -47,93 +46,40 @@ if [ ! -f /etc/localtime ]; then
     $SUDO_CMD dpkg-reconfigure --frontend noninteractive tzdata
 fi
 
-# batcat対応
-if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
-    mkdir -p ~/.local/bin
-    ln -s /usr/bin/batcat ~/.local/bin/bat
-    export PATH="$HOME/.local/bin:$PATH"
-fi
-
-# --- Neovim (指定インストール) ---
-NVIM_VERSION="v0.11.6"
-
-# インストール済みか、かつ指定バージョンと同じかチェック
-if ! command -v nvim &> /dev/null || ! nvim --version | grep -q "$NVIM_VERSION"; then
-    echo "🌑 Installing Neovim $NVIM_VERSION ..."
-
-    ARCH=$(uname -m)
-    # GitHubのリリースアセット名に合わせる
-    if [ "$ARCH" = "x86_64" ]; then
-        NVIM_ASSET="nvim-linux-x86_64.tar.gz"
-        NVIM_DIR_NAME="nvim-linux-x86_64"
-    elif [ "$ARCH" = "aarch64" ]; then
-        NVIM_ASSET="nvim-linux-arm64.tar.gz"
-        NVIM_DIR_NAME="nvim-linux-arm64"
-    else
-        echo "❌ Unsupported architecture: $ARCH"
-        exit 1
-    fi
-
-    URL="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_ASSET}"
-    echo "⬇️ Downloading from: $URL"
-
-    # 一時ディレクトリで作業
-    TEMP_DIR=$(mktemp -d)
-    cd "$TEMP_DIR"
-
-    if curl -L -f -O "$URL"; then
-        # 既存の古いバイナリディレクトリを削除してクリーンアップ
-        $SUDO_CMD rm -rf "/opt/$NVIM_DIR_NAME"
-        
-        # 解凍して配置
-        $SUDO_CMD tar -C /opt -xzf "$NVIM_ASSET"
-        
-        # シンボリックリンクの作成（絶対パスで指定して確実に）
-        $SUDO_CMD ln -sf "/opt/$NVIM_DIR_NAME/bin/nvim" /usr/local/bin/nvim
-        
-        echo "✅ Neovim $NVIM_VERSION installed successfully."
-    else
-        echo "❌ Download failed! Check if version $NVIM_VERSION exists at GitHub."
-    fi
-    
-    # 作業ディレクトリの削除
-    cd - > /dev/null
-    rm -rf "$TEMP_DIR"
-else
-    echo "✅ Neovim is already up-to-date ($(nvim --version | head -n 1))."
-fi
-
 {{ else if eq .chezmoi.os "darwin" -}}
-# -----------------------------------------------------------------------------
-# 2. macOS用セットアップ
-# -----------------------------------------------------------------------------
 echo "🍎 macOS用のセットアップを実行中..."
 if ! command -v brew &> /dev/null; then
-    echo "🍺 Homebrew not found. Skipping brew install."
-else
-    echo "🍺 Updating Homebrew..."
-    brew update || true
-
-    echo "🍺 Installing packages..."
-    brew install lsd bat ripgrep tmux neovim node gh || true
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
-    
+# llvm, cmake, ninja は mise でのビルド失敗を避けるために brew で入れておく
+brew install git zsh tmux llvm cmake ninja
 {{ end -}}
 
 # -----------------------------------------------------------------------------
-# 3. 共通処理: Rust & Zsh/Tmux プラグイン
+# 2. mise によるツール一括インストール (Neovim, Rust, Node, etc.)
 # -----------------------------------------------------------------------------
-if ! command -v cargo &> /dev/null; then
-    echo "🦀 Rustをインストール中..."
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source "$HOME/.cargo/env"
+# --- 修正後の run_on_change スクリプト ---
+MISE_BIN="$HOME/.local/bin/mise"
+
+if [ ! -f "$MISE_BIN" ]; then
+    echo "🪄 Installing mise..."
+    curl https://mise.jdx.dev/install.sh | sh
 fi
 
-if ! command -v rg &> /dev/null; then cargo install ripgrep; fi
-if ! command -v lsd &> /dev/null; then cargo install lsd; fi
-if ! command -v bat &> /dev/null; then cargo install bat; fi
+echo "🛠️ mise install を実行中..."
+# インストール実行
+$MISE_BIN install -y
 
-# Zshプラグイン保存先
+# 【重要】現在のシェルセッションで shims (miseで入れたツールのパス) を有効化
+# これにより、この後の工程や、直後に起動する Neovim がツールを見つけられるようになります
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
+# 必要に応じて reshim (パスの再構成) を実行
+$MISE_BIN reshim
+
+# -----------------------------------------------------------------------------
+# 3. Zsh/Tmux プラグイン
+# -----------------------------------------------------------------------------
 ZSH_PLUGIN_DIR="$HOME/.local/share/zsh/plugins"
 mkdir -p "$ZSH_PLUGIN_DIR"
 
@@ -153,19 +99,30 @@ clone_if_not_exists "https://github.com/Aloxaf/fzf-tab" "$ZSH_PLUGIN_DIR/fzf-tab
 TMUX_TPM_DIR="$HOME/.tmux/plugins/tpm"
 clone_if_not_exists "https://github.com/tmux-plugins/tpm" "$TMUX_TPM_DIR"
 
-FZF_DIR="$HOME/.fzf"
-if [ ! -d "$FZF_DIR" ]; then
-    git clone --depth 1 https://github.com/junegunn/fzf.git "$FZF_DIR"
-    "$FZF_DIR/install" --all --no-bash --no-fish
-fi
-
-# デフォルトシェルを Zsh に変更 (GitHub Actions対策で sudo を使用)
-ZSH_PATH=$(which zsh)
+# -----------------------------------------------------------------------------
+# 4. 仕上げ
+# -----------------------------------------------------------------------------
+ZSH_PATH=$(command -v zsh)
 CURRENT_USER=$(whoami)
-if [ "$SHELL" != "$(which zsh)" ]; then
-    echo "🐚 Changing default shell to zsh..."
-    $SUDO_CMD chsh -s "$(which zsh)" "$CURRENT_USER"
+
+# OSごとに「システムに登録されている現在のデフォルトシェル」を正確に取得
+{{ if eq .chezmoi.os "darwin" -}}
+CURRENT_DEFAULT_SHELL=$(dscl . -read /Users/$CURRENT_USER UserShell | awk '{print $2}')
+{{ else -}}
+CURRENT_DEFAULT_SHELL=$(getent passwd $CURRENT_USER | cut -d: -f7)
+{{ end -}}
+
+# 登録されているシェルが目的のZshパスと違う場合のみ変更処理を行う
+if [ "$CURRENT_DEFAULT_SHELL" != "$ZSH_PATH" ]; then
+    echo "🐚 Changing default shell to $ZSH_PATH..."
+
+    # 新しいzshのパスが /etc/shells に登録されていない場合は追加する (chshエラー回避のため)
+    if ! grep -Fxq "$ZSH_PATH" /etc/shells; then
+        echo "追加: $ZSH_PATH を /etc/shells に登録します..."
+        echo "$ZSH_PATH" | $SUDO_CMD tee -a /etc/shells
+    fi
+
+    $SUDO_CMD chsh -s "$ZSH_PATH" "$CURRENT_USER"
 fi
 
 echo "✨ Setup Complete!"
-echo "✨ セットアップ完了！"
