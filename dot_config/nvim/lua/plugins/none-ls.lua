@@ -11,6 +11,7 @@ return {
 			null_ls.builtins.formatting.stylua,
 			-- C/C++の整形
 			null_ls.builtins.formatting.clang_format,
+			null_ls.builtins.formatting.prettierd,
 		})
 	end,
 }
