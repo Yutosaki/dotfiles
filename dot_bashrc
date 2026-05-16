@@ -1,70 +1,262 @@
+# macOSでのBashデフォルト警告を非表示にする
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 # ================================
-# Bash 設定ファイル
+# Bash 基本・補完設定
 # ================================
 # コマンド補完の有効化
 if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
-# ================================
-# 基本設定
-# ================================
 if [ -z "$TMUX" ]; then
     export TERM=xterm-256color
 fi
 
-# ================================
-# 履歴設定
-# ================================
-export HISTSIZE=10000        # 保存する履歴の数
-export HISTFILESIZE=20000    # 履歴ファイルのサイズ
-shopt -s histappend          # 履歴を追記
-PROMPT_COMMAND='history -a'  # セッション毎に追加
-
-# ================================
-# alias（ショートカット）設定
-# ================================
-alias ll='ls -al --color=auto'
-
-# ================================
-# PATH 設定
-# ================================
-export PATH="$HOME/bin:$PATH"
-
-# ================================
-# シンプルな関数定義
-# ================================
-mkcd() {
-    mkdir -p "$1" && cd "$1"
-}
-
-# ================================
-# プロンプト設定
-# ================================
-# オレンジベースのプロンプト：シェル名とホスト名は同じ色 (208)
-shellName=$(echo "$0" | sed 's/^-//')
-parse_git_branch() {
-    git branch 2>/dev/null | sed -n '/\* /s///p'
-}
-
-PS1="\[$(tput setaf 208)\]${shellName}\[$(tput setaf 220)\]@\[$(tput setaf 208)\]\h \[$(tput setaf 215)\]\w \[$(tput setaf 228)\]\$(parse_git_branch)\[$(tput sgr0)\]\$ "
-
-# ================================
-# その他の設定
-# ================================
 # vim をデフォルトエディタに設定
 export EDITOR=vim
 
-# ターミナルの動作を高速化する設定
+# ターミナルの動作・補完設定
 bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'
 bind 'set bell-style none'
 
-# Lima BEGIN
+# キーバインド設定 (zshのbindkey設定を移植)
+bind '"\C-h": backward-char'
+bind '"\C-l": forward-char'
+bind '"\C-j": next-history'
+bind '"\C-k": previous-history'
+
+# 言語設定
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# ================================
+# 履歴設定 (zshの大容量＆高度な設定を反映)
+# ================================
+export HISTFILE=~/.bash_history
+export HISTSIZE=1000000
+export HISTFILESIZE=1000000
+
+shopt -s histappend  # 履歴を追記
+shopt -s cmdhist     # 複数行コマンドを1つの履歴に保存
+
+# ignorespace: スペースから始まるコマンドは保存しない (hist_ignore_space 相当)
+# erasedups: 重複コマンドを削除して履歴をスッキリさせる (hist_reduce_blanks 相当)
+export HISTCONTROL=ignorespace:erasedups
+
+# ================================
+# man表示・bat設定
+# ================================
+export MANPAGER="sh -c 'col -bx | bat --theme=TwoDark --paging=always -l man -p'"
+
+man() {
+  if [ "$(uname)" = "Darwin" ]; then
+    command man "$@"
+  else
+    command man --no-hyphenation --no-justification "$@"
+  fi
+}
+
+export BAT_THEME="Dracula"
+
+# ================================
+# 共通パス設定
+# ================================
+export PATH="$PATH:/bin"
+export PATH="$PATH:/sbin"
+export PATH="$PATH:/usr/bin"
+export PATH="$PATH:/usr/sbin"
+export PATH="$PATH:/usr/local/bin"
+export PATH="$PATH:$HOME/.local/bin"
+export PATH="$PATH:$HOME/.npm-global/bin"
+export PATH="$PATH:$HOME/.config/nvim"
+export PATH="$HOME/bin:$PATH"
+
+# Go
+export GOPATH="$HOME/Go"
+export PATH="$PATH:$GOPATH/bin"
+
+# Cargo
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
+
+# ================================
+# mise (Universal Tool Manager) 設定
+# ================================
+export PATH="$HOME/.local/bin:$PATH"
+
+if command -v mise &> /dev/null; then
+  eval "$(mise activate bash)"
+fi
+
+# ================================
+# OS別設定
+# ================================
+case "$(uname -s)" in
+    Darwin)
+        # Homebrew 基礎設定 (Apple Silicon)
+        if [ -f /opt/homebrew/bin/brew ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        fi
+
+        # LLVM (clangd用)
+        if [ -d "/opt/homebrew/opt/llvm/bin" ]; then
+            export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+        fi
+
+        # 各種ライブラリ (libpq, icu4c等)
+        export LDFLAGS="-L/opt/homebrew/opt/icu4c/lib $LDFLAGS"
+        export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include $CPPFLAGS"
+        export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+        # PostgreSQL (ローカルインストール用)
+        if [ -d "/usr/local/pgsql/bin" ]; then
+            export PATH="/usr/local/pgsql/bin:$PATH"
+            export LDFLAGS="-L/usr/local/pgsql/lib $LDFLAGS"
+            export CPPFLAGS="-I/usr/local/pgsql/include $CPPFLAGS"
+        fi
+        ;;
+
+    Linux)
+        # Linux特有の設定が必要な場合はここに記述
+        ;;
+esac
+
+# ================================
+# エイリアス・関数定義
+# ================================
+alias ls="lsd --icon never"
+alias ll="ls -al"
+alias tmp="cd /tmp"
+alias tm="tmux"
+alias mp="multipass"
+
+if command -v tac >/dev/null 2>&1; then
+  alias rtac='tac'
+else
+  alias rtac='tail -r'
+fi
+
+# シンプルな関数定義
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Google検索の関数
+google(){
+    local url="https://google.co.jp/search?q=${*// /+}"
+    open -a "Google Chrome" "$url"
+}
+
+# cdした後にlsするhook (zshのchpwdをBash関数で再現)
+cd() {
+    builtin cd "$@" && {
+        if [[ "$PWD" != "$HOME" ]]; then
+            lsd --icon=never
+        fi
+    }
+}
+
+# ================================
+# プロンプト設定 (bash専用：オレンジベース)
+# ================================
+set_bash_prompt() {
+    local shellName="bash"
+    
+    # 元の .bashrc に設定されていたオレンジベースのカラーコード
+    local color_user="208"   # オレンジ
+    local color_at="220"     # 黄色
+    local color_host="208"   # オレンジ
+    local color_path="215"   # ライトオレンジ
+    local color_git="228"    # 薄い黄色
+
+    # Git情報の取得とステータス判定 (zshのvcs_info風の表示を維持)
+    local git_info=""
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
+        local branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+        local unstaged=""
+        local staged=""
+        
+        # zsh設定の変更検知記号（! と +）を継承
+        git diff --quiet 2>/dev/null || unstaged="\[\033[38;5;176m\]+"
+        git diff --cached --quiet 2>/dev/null || staged="\[\033[38;5;228m\]!"
+        
+        git_info="\[\033[38;5;${color_git}m\]${branch}${staged}${unstaged} "
+    fi
+    
+    # 最終的なPS1の組み立て (文字化け・折り返し崩れ防止のため \[ \] で囲む)
+    PS1="\[\033[38;5;${color_user}m\]${shellName}\[\033[38;5;${color_at}m\]@\[\033[38;5;${color_host}m\]\h \[\033[38;5;${color_path}m\]\w ${git_info}\[\033[0m\]\$ "
+}
+
+# 毎コマンド実行後に履歴保存とプロンプト描画を行う
+PROMPT_COMMAND="history -a; set_bash_prompt"
+
+# ================================
+# fzf 設定 (Ctrl+R 履歴検索カスタムウィジェット)
+# ================================
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+export FZF_DEFAULT_COMMAND='history -1000'
+export FZF_CTRL_R_OPTS='--height 40% --layout=reverse --preview "echo {}" --preview-window down:3:wrap --bind ctrl-y:execute-silent(echo -n {2..} | pbcopy)'
+
+# Bash用のカスタム Ctrl+R ウィジェット関数
+__fzf_history__() {
+    local history_cmd
+    if command -v tac >/dev/null 2>&1; then
+        history_cmd="tac"
+    else
+        history_cmd="tail -r"
+    fi
+
+    local selected
+    history -a
+    history -r
+    selected=$(history | $history_cmd | fzf --height=40% --layout=reverse \
+        --color="fg:#d0d0d0,bg:#1e1e1e,hl:#ffaf00,fg+:#d0d0d0,bg+:#5f00af,hl+:#ffaf00,info:#ffaf00,prompt:#ffaf00,pointer:#ffaf00,marker:#ffaf00,spinner:#ffaf00,header:#ffaf00" \
+        --bind "del:abort")
+    
+    if [[ -n "$selected" ]]; then
+        READLINE_LINE=$(echo "$selected" | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+//')
+        READLINE_POINT=${#READLINE_LINE}
+    fi
+}
+bind -x '"\C-r": __fzf_history__'
+
+# ================================
+# SSH 設定
+# ================================
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   eval "$(ssh-agent -s)" > /dev/null
+fi
+
+export APPLE_SSH_ADD_BEHAVIOR=Apple
+
+if [ "$(uname)" = "Darwin" ]; then
+    if [ ! -f ~/.ssh/config.Darwin ]; then
+        echo 'Match exec "test $(uname) = '\''Darwin'\''"' > ~/.ssh/config.Darwin
+        echo '    UseKeychain yes' >> ~/.ssh/config.Darwin
+    fi
+else
+    if [ ! -f ~/.ssh/config.Linux ]; then
+        mkdir -p ~/.ssh
+        echo '# Linux 専用の設定' > ~/.ssh/config.Linux
+    fi
+fi
+
+# ================================
+# Lima BEGIN / END
+# ================================
 # Make sure iptables and mount.fuse3 are available
 PATH="$PATH:/usr/sbin:/sbin"
 export PATH
-# Lima END
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-. "$HOME/.cargo/env"
+# ================================
+# 外部設定ファイルの読み込み
+# ================================
+if [ -f "$HOME/.brewconfig.bash" ]; then
+    source "$HOME/.brewconfig.bash"
+elif [ -f "$HOME/.brewconfig.zsh" ]; then
+    source "$HOME/.brewconfig.zsh"
+fi
