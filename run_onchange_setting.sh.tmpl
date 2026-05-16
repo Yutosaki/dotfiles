@@ -51,8 +51,25 @@ echo "🍎 macOS用のセットアップを実行中..."
 if ! command -v brew &> /dev/null; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
-# llvm, cmake, ninja は mise でのビルド失敗を避けるために brew で入れておく
-brew install git zsh tmux llvm cmake ninja
+
+# インストールしたいパッケージのリスト
+WANTED_PACKAGES=(git zsh tmux llvm cmake ninja)
+MISSING_PACKAGES=()
+
+# すでにインストールされているか1つずつチェック
+for pkg in "${WANTED_PACKAGES[@]}"; do
+    if ! brew list "$pkg" &>/dev/null; then
+        MISSING_PACKAGES+=("$pkg")
+    fi
+done
+
+# 未インストールのものだけがあれば一括でインストール
+if [ ${#MISSING_PACKAGES[@]} -ne 0 ]; then
+    echo "🍺 未インストールのパッケージを導入します: ${MISSING_PACKAGES[*]}"
+    brew install "${MISSING_PACKAGES[@]}"
+else
+    echo "✅ すべてのHomebrewパッケージは導入済みです。スキップします。"
+fi
 {{ end -}}
 
 # -----------------------------------------------------------------------------
