@@ -87,7 +87,7 @@ mise install -y
 mise reshim
 
 # -----------------------------------------------------------------------------
-# 3. Zsh/Tmux プラグイン
+# 3. Zsh/Bash/Tmux プラグイン
 # -----------------------------------------------------------------------------
 ZSH_PLUGIN_DIR="$HOME/.local/share/zsh/plugins"
 mkdir -p "$ZSH_PLUGIN_DIR"
@@ -107,6 +107,19 @@ clone_if_not_exists "https://github.com/Aloxaf/fzf-tab" "$ZSH_PLUGIN_DIR/fzf-tab
 # --- Tmux プラグインマネージャー (tpm) ---
 TMUX_TPM_DIR="$HOME/.tmux/plugins/tpm"
 clone_if_not_exists "https://github.com/tmux-plugins/tpm" "$TMUX_TPM_DIR"
+
+# --- Bash 拡張プラグイン (ble.sh) のインストール ---
+BLE_INSTALL_DIR="$HOME/.local/share/blesh"
+if [ ! -d "$BLE_INSTALL_DIR" ]; then
+    echo "⬇️ Installing ble.sh..."
+    BLE_CACHE_SRC="$HOME/.cache/ble.sh-src"
+    rm -rf "$BLE_CACHE_SRC"
+
+    # 依存関係も含めてクローンしてビルド・インストール
+    git clone --recursive --depth 1 https://github.com/akinomyoga/ble.sh.git "$BLE_CACHE_SRC"
+    make -C "$BLE_CACHE_SRC" install PREFIX="$HOME/.local"
+    rm -rf "$BLE_CACHE_SRC"
+fi
 
 # -----------------------------------------------------------------------------
 # 4. 仕上げ
