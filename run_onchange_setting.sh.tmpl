@@ -22,16 +22,27 @@ echo "🚀 セットアップを開始します..."
 echo "🐧 Linux用のセットアップを実行中..."
 export DEBIAN_FRONTEND=noninteractive
 
-# 必須ツールインストール
-$SUDO_CMD apt-get update
-$SUDO_CMD apt-get install -y \
-    build-essential unzip valgrind git curl zsh tmux tzdata locales
+# インストールしたいパッケージのリスト
+WANTED_PACKAGES=(build-essential unzip valgrind git curl zsh tmux tzdata locales)
+MISSING_PACKAGES=()
+
+# すでにインストールされているか1つずつチェック
+for pkg in "${WANTED_PACKAGES[@]}"; do
+    if ! dpkg -s "$pkg" &>/dev/null; then
+        MISSING_PACKAGES+=("$pkg")
+    fi
+done
+
+# 未インストールのものがあれば一括でインストール
+if [ ${#MISSING_PACKAGES[@]} -ne 0 ]; then
+    echo "📦 未インストールのパッケージを導入します: ${MISSING_PACKAGES[*]}"
+    $SUDO_CMD apt-get update
+    $SUDO_CMD apt-get install -y "${MISSING_PACKAGES[@]}"
+else
+    echo "✅ すべてのAPTパッケージは導入済みです。スキップします。"
+fi
 
 # ロケール生成
-if ! command -v locale-gen &> /dev/null; then
-    $SUDO_CMD apt-get update
-    $SUDO_CMD apt-get install -y locales
-fi
 # en_US.UTF-8 がない場合は生成
 if ! grep -q "en_US.UTF-8" /etc/locale.gen; then
     echo "en_US.UTF-8 UTF-8" | $SUDO_CMD tee -a /etc/locale.gen
@@ -53,7 +64,7 @@ if ! command -v brew &> /dev/null; then
 fi
 
 # インストールしたいパッケージのリスト
-WANTED_PACKAGES=(git zsh tmux llvm cmake ninja)
+WANTED_PACKAGES=(git zsh tmux llvm cmake ninja gawk)
 MISSING_PACKAGES=()
 
 # すでにインストールされているか1つずつチェック
@@ -63,7 +74,7 @@ for pkg in "${WANTED_PACKAGES[@]}"; do
     fi
 done
 
-# 未インストールのものだけがあれば一括でインストール
+# 未インストールのものがあれば一括でインストール
 if [ ${#MISSING_PACKAGES[@]} -ne 0 ]; then
     echo "🍺 未インストールのパッケージを導入します: ${MISSING_PACKAGES[*]}"
     brew install "${MISSING_PACKAGES[@]}"
