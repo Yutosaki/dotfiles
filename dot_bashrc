@@ -1,10 +1,16 @@
+# ================================
+# ble.sh 初期化設定 (必ずファイルの先頭に配置)
+# ================================
+if [[ $- == *i* && -f ~/.local/share/blesh/ble.sh ]]; then
+    source ~/.local/share/blesh/ble.sh --noattach
+fi
+
 # macOSでのBashデフォルト警告を非表示にする
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # ================================
 # Bash 基本・補完設定
 # ================================
-# コマンド補完の有効化
 if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
@@ -13,36 +19,29 @@ if [ -z "$TMUX" ]; then
     export TERM=xterm-256color
 fi
 
-# vim をデフォルトエディタに設定
 export EDITOR=vim
 
-# ターミナルの動作・補完設定
 bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'
 bind 'set bell-style none'
 
-# キーバインド設定 (zshのbindkey設定を移植)
+# キーバインド設定
 bind '"\C-h": backward-char'
-bind '"\C-l": forward-char'
 bind '"\C-j": next-history'
 bind '"\C-k": previous-history'
 
-# 言語設定
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # ================================
-# 履歴設定 (zshの大容量＆高度な設定を反映)
+# 履歴設定
 # ================================
 export HISTFILE=~/.bash_history
 export HISTSIZE=1000000
 export HISTFILESIZE=1000000
 
-shopt -s histappend  # 履歴を追記
-shopt -s cmdhist     # 複数行コマンドを1つの履歴に保存
-
-# ignorespace: スペースから始まるコマンドは保存しない (hist_ignore_space 相当)
-# erasedups: 重複コマンドを削除して履歴をスッキリさせる (hist_reduce_blanks 相当)
+shopt -s histappend
+shopt -s cmdhist
 export HISTCONTROL=ignorespace:erasedups
 
 # ================================
@@ -73,11 +72,9 @@ export PATH="$PATH:$HOME/.npm-global/bin"
 export PATH="$PATH:$HOME/.config/nvim"
 export PATH="$HOME/bin:$PATH"
 
-# Go
 export GOPATH="$HOME/Go"
 export PATH="$PATH:$GOPATH/bin"
 
-# Cargo
 if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
@@ -96,31 +93,25 @@ fi
 # ================================
 case "$(uname -s)" in
     Darwin)
-        # Homebrew 基礎設定 (Apple Silicon)
         if [ -f /opt/homebrew/bin/brew ]; then
             eval "$(/opt/homebrew/bin/brew shellenv)"
         fi
 
-        # LLVM (clangd用)
         if [ -d "/opt/homebrew/opt/llvm/bin" ]; then
             export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
         fi
 
-        # 各種ライブラリ (libpq, icu4c等)
         export LDFLAGS="-L/opt/homebrew/opt/icu4c/lib $LDFLAGS"
         export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include $CPPFLAGS"
         export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig:$PKG_CONFIG_PATH"
 
-        # PostgreSQL (ローカルインストール用)
         if [ -d "/usr/local/pgsql/bin" ]; then
             export PATH="/usr/local/pgsql/bin:$PATH"
             export LDFLAGS="-L/usr/local/pgsql/lib $LDFLAGS"
             export CPPFLAGS="-I/usr/local/pgsql/include $CPPFLAGS"
         fi
         ;;
-
     Linux)
-        # Linux特有の設定が必要な場合はここに記述
         ;;
 esac
 
@@ -139,18 +130,15 @@ else
   alias rtac='tail -r'
 fi
 
-# シンプルな関数定義
 mkcd() {
     mkdir -p "$1" && cd "$1"
 }
 
-# Google検索の関数
 google(){
     local url="https://google.co.jp/search?q=${*// /+}"
     open -a "Google Chrome" "$url"
 }
 
-# cdした後にlsするhook (zshのchpwdをBash関数で再現)
 cd() {
     builtin cd "$@" && {
         if [[ "$PWD" != "$HOME" ]]; then
@@ -160,38 +148,41 @@ cd() {
 }
 
 # ================================
-# プロンプト設定 (bash専用：オレンジベース)
+# プロンプト設定 (bash専用：オレンジベース・ble.sh共存版)
 # ================================
 set_bash_prompt() {
     local shellName="bash"
-    
-    # 元の .bashrc に設定されていたオレンジベースのカラーコード
-    local color_user="208"   # オレンジ
-    local color_at="220"     # 黄色
-    local color_host="208"   # オレンジ
-    local color_path="215"   # ライトオレンジ
-    local color_git="228"    # 薄い黄色
+    local color_user="208"   
+    local color_at="220"     
+    local color_host="208"   
+    local color_path="215"   
+    local color_git="228"    
 
-    # Git情報の取得とステータス判定 (zshのvcs_info風の表示を維持)
+    local fb sb
+    if [[ ${BLE_VERSION-} ]]; then
+        fb=""
+        sb=""
+    else
+        fb="\["
+        sb="\]"
+    fi
+
     local git_info=""
     if git rev-parse --is-inside-work-tree &>/dev/null; then
         local branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
         local unstaged=""
         local staged=""
         
-        # zsh設定の変更検知記号（! と +）を継承
-        git diff --quiet 2>/dev/null || unstaged="\[\033[38;5;176m\]+"
-        git diff --cached --quiet 2>/dev/null || staged="\[\033[38;5;228m\]!"
+        git diff --quiet 2>/dev/null || unstaged="${fb}\033[38;5;176m${sb}+"
+        git diff --cached --quiet 2>/dev/null || staged="${fb}\033[38;5;228m${sb}!"
         
-        git_info="\[\033[38;5;${color_git}m\]${branch}${staged}${unstaged} "
+        git_info="${fb}\033[38;5;${color_git}m${sb}${branch}${staged}${unstaged} "
     fi
     
-    # 最終的なPS1の組み立て (文字化け・折り返し崩れ防止のため \[ \] で囲む)
-    PS1="\[\033[38;5;${color_user}m\]${shellName}\[\033[38;5;${color_at}m\]@\[\033[38;5;${color_host}m\]\h \[\033[38;5;${color_path}m\]\w ${git_info}\[\033[0m\]\$ "
+    PS1="${fb}\033[38;5;${color_user}m${sb}${shellName}${fb}\033[38;5;${color_at}m${sb}@${fb}\033[38;5;${color_host}m${sb}\h ${fb}\033[38;5;${color_path}m${sb}\w ${git_info}${fb}\033[0m${sb}\$ "
 }
 
-# 毎コマンド実行後に履歴保存とプロンプト描画を行う
-PROMPT_COMMAND="history -a; set_bash_prompt"
+PROMPT_COMMAND="set_bash_prompt"
 
 # ================================
 # fzf 設定 (Ctrl+R 履歴検索カスタムウィジェット)
@@ -201,7 +192,6 @@ PROMPT_COMMAND="history -a; set_bash_prompt"
 export FZF_DEFAULT_COMMAND='history -1000'
 export FZF_CTRL_R_OPTS='--height 40% --layout=reverse --preview "echo {}" --preview-window down:3:wrap --bind ctrl-y:execute-silent(echo -n {2..} | pbcopy)'
 
-# Bash用のカスタム Ctrl+R ウィジェット関数
 __fzf_history__() {
     local history_cmd
     if command -v tac >/dev/null 2>&1; then
@@ -221,8 +211,11 @@ __fzf_history__() {
         READLINE_LINE=$(echo "$selected" | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+//')
         READLINE_POINT=${#READLINE_LINE}
     fi
+
+    if [[ ${BLE_VERSION-} ]]; then
+        ble/textarea/invalidate
+    fi
 }
-bind -x '"\C-r": __fzf_history__'
 
 # ================================
 # SSH 設定
@@ -248,7 +241,6 @@ fi
 # ================================
 # Lima BEGIN / END
 # ================================
-# Make sure iptables and mount.fuse3 are available
 PATH="$PATH:/usr/sbin:/sbin"
 export PATH
 
@@ -259,4 +251,51 @@ if [ -f "$HOME/.brewconfig.bash" ]; then
     source "$HOME/.brewconfig.bash"
 elif [ -f "$HOME/.brewconfig.zsh" ]; then
     source "$HOME/.brewconfig.zsh"
+fi
+
+# ================================
+# ble.sh 有効化・挙動カスタマイズ設定
+# ================================
+if [[ ${BLE_VERSION-} ]]; then
+    bleopt prompt_eol_mark=''
+    bleopt exec_exit_mark=
+    bleopt exec_errexit_mark=
+    bleopt exec_elapsed_mark=
+    bleopt edit_marker=
+    bleopt edit_marker_error=
+
+    # 履歴からのグレーの予測文字（Auto-complete）を有効化
+    bleopt complete_auto_complete=1
+
+    # 正しいコマンドを打ったときの色を【緑色】に変更 (zsh再現)
+    ble-face command_builtin=fg=green
+    ble-face command_file=fg=green
+    ble-face command_alias=fg=green
+    ble-face command_function=fg=green
+    ble-face auto_complete=fg=242
+
+    # 補完モジュール（core-complete）が完全にロードされた後に、中身の処理を確実に実行します
+    ble-import core-complete -C '
+        bleopt complete_menu_complete_opts=insert-selection:hidden
+        ble-bind -f TAB menu-complete
+        ble-bind -f C-i menu-complete
+        ble-bind -f C-@  "complete toggle_menu"
+        ble-bind -f C-SP "complete toggle_menu"
+        ble-bind -m menu_complete -f C-@  menu_complete/toggle-hidden
+        ble-bind -m menu_complete -f C-SP menu_complete/toggle-hidden
+
+        # 補完システムが起動した後にバインドするため、C-lに「予測があれば一発全確定、
+        ble-bind -f C-h backward-char
+        ble-bind -f C-l forward-char
+    '
+
+    # ble.sh 本体をアタッチ
+    ble-attach
+
+    # Ctrl+R の独自fzfウィジェットを登録
+    ble-bind -x 'C-r' __fzf_history__
+else
+    bind -x '"\C-r": __fzf_history__'
+    bind '"\C-h": backward-char'
+    bind '"\C-l": forward-char'
 fi
